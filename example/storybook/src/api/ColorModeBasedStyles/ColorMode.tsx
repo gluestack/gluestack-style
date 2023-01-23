@@ -8,8 +8,8 @@ import { get, set } from '@dank-style/color-mode';
 const StyledColorMode = styled(
   View,
   {
-    w: '$10',
-    h: '$10',
+    w: '$24',
+    h: '$24',
     bg: '$red500',
     _dark: {
       bg: '$info600',
@@ -38,7 +38,7 @@ export function ColorMode() {
           Toggle {currectColorMode === 'dark' ? 'light' : 'dark'}
         </Text>
       </Pressable>
-      <StyledColorMode />
+      <StyledColorMode states={{ hover: true }} />
     </Wrapper>
   );
 }
