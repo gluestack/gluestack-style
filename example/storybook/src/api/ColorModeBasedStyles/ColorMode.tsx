@@ -5,27 +5,17 @@ import { styled } from '@dank-style/react';
 import { Wrapper } from '../../components/Wrapper';
 import { get, set } from '@dank-style/color-mode';
 
-const StyledColorMode = memo(
-  styled(
-    View,
-    {
-      baseStyle: {
-        style: {
-          w: 100,
-          h: 100,
-          bg: '$red500',
-        },
-        colorMode: {
-          dark: {
-            style: {
-              bg: '$info600',
-            },
-          },
-        },
-      },
+const StyledColorMode = styled(
+  View,
+  {
+    w: '$10',
+    h: '$10',
+    bg: '$red500',
+    _dark: {
+      bg: '$info600',
     },
-    {}
-  )
+  },
+  {}
 );
 
 export function ColorMode() {

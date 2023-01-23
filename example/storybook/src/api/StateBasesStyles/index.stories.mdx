@@ -27,28 +27,21 @@ export type STATES =
 - Here's an example of how the **`states`** prop can be used:
 
 ```jsx
-const StyledButton = styled(Pressable, {
-	 baseStyle: {
-			style: {
-					padding: 8,
-				  borderRadius: 4,
-				  backgroundColor: "$green400"
-			},
-
-			state: {
-				  hover: {
-						style: {
-								backgroundColor: "$blue800";
-						}
-				  }
-				  active: {
-						style: {
-								backgroundColor: "$pink400";
-						}
-				  }
-			}
-
-	 }, {}, {}
+const StyledButton = styled(
+  Pressable,
+  {
+    'padding': 8,
+    'borderRadius': 4,
+    'backgroundColor': '$green400',
+    ':hover': {
+      backgroundColor: '$blue800',
+    },
+    ':active': {
+      backgroundColor: '$pink400',
+    },
+  },
+  {},
+  {}
 );
 
 function Button() {
@@ -67,7 +60,6 @@ function Button() {
     </StyledButton>
   );
 }
-
 ```
 
 In the example above, we have a functional component Button that wraps a **`StyledButton`** component, which is the component returned by the **`styled`** function. The **`Button`** component uses useState hooks to keep track of whether the button is currently being hovered over or pressed (active). It then passes the current state to the **`StyledButton`** component via the **`states`** prop.

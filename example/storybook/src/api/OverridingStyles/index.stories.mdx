@@ -13,16 +13,10 @@ import { Canvas, Meta, Story } from '@storybook/addon-docs';
 <Button
   size="large"
   sx={{
-    style: {
-      marginBottom: '$4',
-      bg: 'pink',
-    },
-    state: {
-      hover: {
-        style: {
-          bg: 'orange',
-        },
-      },
+    marginBottom: '$4',
+    bg: 'pink',
+    ':hover': {
+      bg: 'orange',
     },
   }}
 >
@@ -56,19 +50,12 @@ This will turn into :
 ```jsx
 <StyledView
   sx={{
-    style: { borderColor: '$grey600' },
-    state: { active: { state: { style: { borderColor: '$grey700' } } } },
-    queries: [
-      {
-        condition: '$md',
-        value: {
-          colorMode: {
-            dark: { style: { bg: '$primary200' } },
-            light: { style: { bg: '$primary700' } },
-          },
-        },
-      },
-    ],
+    'borderColor': '$grey600',
+    ':active': { borderColor: '$grey700' },
+    '@md': {
+      _dark: { bg: '$primary200' },
+      _light: { bg: '$primary700' },
+    },
   }}
 />
 ```
