@@ -285,6 +285,7 @@ export function getComponentStyleIds(arr: OrderedSXResolved): StyleIds {
       // if (ret.compoundVariants.length === 0)
       //   ret.compoundVariants = [{ ids: [], n: 'alsjnf' }];
 
+      //@ts-ignore
       const condition = item?.meta?.condition;
       let conditionIndex = ret.compoundVariants.findIndex(
         (item) => item.condition === condition
@@ -296,6 +297,7 @@ export function getComponentStyleIds(arr: OrderedSXResolved): StyleIds {
       // }
 
       if (conditionIndex === -1) {
+        //@ts-ignore
         ret.compoundVariants.push({ condition: item?.meta?.condition });
         conditionIndex = ret.compoundVariants.length - 1;
       }

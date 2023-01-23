@@ -14,6 +14,9 @@ const {
   propertyTokenMap,
 } = require('@dank-style/react/lib/commonjs/propertyTokenMap');
 const {
+  convertStyledToStyledVerbosed,
+} = require('@dank-style/react/lib/commonjs/convertSxToSxVerbosed');
+const {
   updateCSSStyleInOrderedResolved,
 } = require('@dank-style/react/lib/commonjs/updateCSSStyleInOrderedResolved.web');
 
@@ -248,7 +251,7 @@ module.exports = function (b) {
               },
               ExtendedConfig
             );
-
+            theme = convertStyledToStyledVerbosed(theme);
             let resolvedStyles = styledToStyledResolved(
               theme,
               [],
