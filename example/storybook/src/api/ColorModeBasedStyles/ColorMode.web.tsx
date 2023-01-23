@@ -9,19 +9,11 @@ const StyledColorMode = memo(
   styled(
     View,
     {
-      baseStyle: {
-        style: {
-          w: 100,
-          h: 100,
-          bg: '$red500',
-        },
-        colorMode: {
-          dark: {
-            style: {
-              bg: '$red200',
-            },
-          },
-        },
+      w: 100,
+      h: 100,
+      bg: '$red500',
+      _dark: {
+        bg: '$info600',
       },
     },
     {}
@@ -55,7 +47,7 @@ export function ColorMode({ ...args }) {
           setCurrentColorMode(currentColorMode === 'dark' ? 'light' : 'dark');
         }}
       >
-        <Text style={{ color: 'white' }}>
+        <Text style={{ color: 'white' }} selectable={false}>
           Toggle {currentColorMode === 'dark' ? 'light' : 'dark'}
         </Text>
       </Pressable>

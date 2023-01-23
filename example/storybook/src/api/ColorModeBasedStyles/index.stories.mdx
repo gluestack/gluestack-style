@@ -14,32 +14,20 @@ import { config } from './dank.config';
 const StyledComponent = styled(
   View,
   {
-    baseStyle: {
-      style: {
-        w: 100,
-        h: 100,
-      },
-      colorMode: {
-        dark: {
-          style: {
-            bg: '$info600',
-          },
-        },
-        light: {
-          style: {
-            bg: '$info800',
-          },
-        },
-      },
+    w: 100,
+    h: 100,
+    _dark: {
+      bg: '$info600',
+    },
+    _light: {
+      bg: '$info800',
     },
     variants: {
-      VariantOne: {
-        style: {
+      variant: {
+        VariantOne: {
           bg: '$secondary600',
           p: '$4',
-        },
-        colorMode: {
-          dark: {
+          _dark: {
             style: {
               bg: 'secondary200',
             },
@@ -70,16 +58,10 @@ import { config } from './dank.config';
 const StyledComponent = styled(
   View,
   {
-    baseStyle: {
+    bg: '$red500',
+    _dark: {
       style: {
-        bg: '$red500',
-      },
-      colorMode: {
-        dark: {
-          style: {
-            bg: '$info600',
-          },
-        },
+        bg: '$info600',
       },
     },
   },

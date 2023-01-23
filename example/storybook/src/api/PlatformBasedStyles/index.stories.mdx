@@ -10,27 +10,15 @@ import { Canvas, Meta, Story } from '@storybook/addon-docs';
 const Box = styled(
   View,
   {
-    baseStyle: {
-      style: {
-        borderRadius: '$full',
-      },
-      platform: {
-        web: {
-          style: {
-            bg: '$amber500',
-          },
-        },
-        ios: {
-          style: {
-            bg: '$blue500',
-          },
-        },
-        android: {
-          style: {
-            bg: '$red500',
-          },
-        },
-      },
+    borderRadius: '$full',
+    _web: {
+      bg: '$amber500',
+    },
+    _ios: {
+      bg: '$blue500',
+    },
+    _android: {
+      bg: '$red500',
     },
   },
   {}
