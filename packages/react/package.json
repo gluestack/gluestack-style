@@ -33,6 +33,10 @@
     "@dank-style/cssify": "*",
     "@dank-style/media-query": "*"
   },
+  "peerDependencies": {
+    "react": ">=16",
+    "react-dom": ">=16"
+  },
   "react-native-builder-bob": {
     "source": "src",
     "output": "lib",
