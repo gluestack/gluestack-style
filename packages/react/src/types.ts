@@ -14,18 +14,18 @@ export type GenericKey = string | number | symbol;
 
 // Tokens
 export interface Tokens {
-  colors?: { [key: GenericKey]: Record<string, any> & {} };
-  space?: { [key: GenericKey]: Record<string, any> & {} };
-  borderWidths?: { [key: GenericKey]: Record<string, any> & {} };
-  radii?: { [key: GenericKey]: Record<string, any> & {} };
-  breakpoints?: { [key: GenericKey]: Record<string, any> & {} };
-  mediaQueries?: { [key: GenericKey]: Record<string, any> & {} };
-  letterSpacings?: { [key: GenericKey]: Record<string, any> & {} };
-  lineHeights?: { [key: GenericKey]: any };
-  fontWeights?: { [key: GenericKey]: Record<string, any> & {} };
-  fonts?: { [key: GenericKey]: Record<string, any> & {} };
-  fontSizes?: { [key: GenericKey]: Record<string, any> & {} };
-  shadows?: { [key: GenericKey]: any };
+  colors?: { [key in GenericKey]: Record<string, any> & {} };
+  space?: { [key in GenericKey]: Record<string, any> & {} };
+  borderWidths?: { [key in GenericKey]: Record<string, any> & {} };
+  radii?: { [key in GenericKey]: Record<string, any> & {} };
+  breakpoints?: { [key in GenericKey]: Record<string, any> & {} };
+  mediaQueries?: { [key in GenericKey]: Record<string, any> & {} };
+  letterSpacings?: { [key in GenericKey]: Record<string, any> & {} };
+  lineHeights?: { [key in GenericKey]: any };
+  fontWeights?: { [key in GenericKey]: Record<string, any> & {} };
+  fonts?: { [key in GenericKey]: Record<string, any> & {} };
+  fontSizes?: { [key in GenericKey]: Record<string, any> & {} };
+  shadows?: { [key in GenericKey]: any };
 }
 
 // Config Types
@@ -185,7 +185,7 @@ export type VariantType<Variants, X> =
         [Key in keyof Variants[Key1] | (string & {})]?: Partial<SxProps<X>>;
       };
     }
-  | { [Key: string & {}]: any };
+  | { [Key in string & {}]: any };
 
 export type SizeType<Sizes, X> = Record<keyof Sizes, SxProps<X>>;
 
@@ -402,7 +402,7 @@ export type VariantTypeNew<Variants, X> =
         >;
       };
     }
-  | { [Key: string & {}]: any };
+  | { [Key in string & {}]: any };
 
 export type SizeTypeNew<Sizes, X> = {
   [Key in keyof Sizes]: SxPropsNew<X> & {
