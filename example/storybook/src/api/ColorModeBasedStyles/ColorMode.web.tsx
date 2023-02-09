@@ -3,6 +3,7 @@ import { View, Pressable, Text } from 'react-native';
 import { styled } from '@dank-style/react';
 import { Wrapper } from '../../components/Wrapper';
 import { get } from '@dank-style/color-mode';
+import { AppProvider, Button } from '@gluestack/design-system';
 
 const StyledColorMode = memo(
   styled(
@@ -10,7 +11,7 @@ const StyledColorMode = memo(
     {
       'w': 100,
       'h': 100,
-      'bg': '$red500',
+      'bg': '$blue500',
       ':hover': {
         // bg: '$blue500',
         _dark: {
@@ -32,18 +33,21 @@ export function ColorMode({ ...args }) {
   const [currentColorMode, setCurrentColorMode] = React.useState(get());
 
   return (
-    <Wrapper colorMode={currentColorMode}>
+    <AppProvider colorMode={currentColorMode}>
       <Pressable
         onPress={() => {
           setCurrentColorMode(currentColorMode === 'dark' ? 'light' : 'dark');
         }}
       >
-        <Text style={{ color: 'white' }}>
-          Toggle {currentColorMode === 'dark' ? 'light' : 'dark'}
-        </Text>
+        <Text>Toggle {currentColorMode === 'dark' ? 'light' : 'dark'}</Text>
       </Pressable>
-      <StyledColorMode {...args} states={{ hover: true }} />
-    </Wrapper>
+      <AppProvider>
+        <Wrapper>
+          <StyledColorMode {...args} states={{ hover: true }} />
+        </Wrapper>
+        <Button sx={{ _dark: { bg: '$red300' } }} />
+      </AppProvider>
+    </AppProvider>
   );
 }
 

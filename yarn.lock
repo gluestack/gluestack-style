@@ -14192,6 +14192,11 @@ lru-cache@^6.0.0:
   dependencies:
     yallist "^4.0.0"
 
+lucide-react-native@^0.112.0:
+  version "0.112.0"
+  resolved "https://registry.yarnpkg.com/lucide-react-native/-/lucide-react-native-0.112.0.tgz#2f3b563508f0965507bde825fb7145be1967dc15"
+  integrity sha512-5JNOK9HdfEcvhk5rhi+69JDWpCMXwtDCcQMnvi7NnfsVDyi3KrKn2HWP3WJ1E+5ZmWItOEDiF1oaVjBACiNppA==
+
 macos-release@^3.0.1:
   version "3.1.0"
   resolved "https://registry.yarnpkg.com/macos-release/-/macos-release-3.1.0.tgz#6165bb0736ae567ed6649e36ce6a24d87cbb7aca"
