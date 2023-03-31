@@ -7,6 +7,7 @@ module.exports = function (api) {
     plugins: [
       // process.env.NODE_ENV === "production" ? myBabel : {},
       [myBabel, { filename: '../../packages/react/src/index' }],
+
       [
         'module-resolver',
         {
@@ -15,6 +16,10 @@ module.exports = function (api) {
             ['@dank-style/css-injector']: path.join(
               __dirname,
               '../../packages/css-injector/src/index'
+            ),
+            ['@dank-style/react']: path.join(
+              __dirname,
+              '../../packages/react/src/index'
             ),
           },
         },

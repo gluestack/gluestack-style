@@ -2,19 +2,26 @@
 import { StyleSheet, Text, View, TextInput } from 'react-native';
 
 // import { StyledProvider, styled } from '@dank-style/react';
-import { StyledProvider, styled } from '../../packages/react/src/index';
-import { config } from './dank.config';
+import { StyledProvider, styled } from '@dank-style/react';
+import { config } from './gluestack-ui.config';
 
 const StyledView = styled(
-  TextInput,
+  View,
   {
     p: '$2',
-    // @ts-ignore
-    multiline: true,
-    textAlignVertical: 'top',
-    h: 100,
+    h: 300,
     w: 300,
     outlineColor: '$primary600',
+    variants: {
+      variant: {
+        solid: {
+          'bg': '$red500',
+          ':hover': {
+            bg: '$yellow500',
+          },
+        },
+      },
+    },
   },
   { ancestorStyle: ['_input'] }
 );
@@ -26,9 +33,20 @@ const StyledView = styled(
 // const StyledText = styled(Text, { color: '$red400' }, {});
 export default function App() {
   return (
-    <StyledProvider config={config}>
+    <StyledProvider config={config.theme}>
       <View style={styles.container}>
-        <StyledView placeholder="hello"></StyledView>
+        <StyledView
+          variant="solid"
+          bg="$red400"
+          sx={{
+            ':hover': {
+              bg: '$amber900',
+            },
+          }}
+          states={{
+            hover: true,
+          }}
+        />
       </View>
     </StyledProvider>
   );
