@@ -11,10 +11,10 @@ import { Text } from 'react-native';
 const styledFonts = createStyled([new TWPlugin({})]);
 
 const StyledText = styledFonts(Text, {
-  // className: 'bg-red-500 h-10 w-10',
+  className: 'bg-red-500 h-10 w-10',
 });
 
-export function FontsPlugin() {
+export function Tailwind() {
   return (
     <Wrapper>
       <StyledText>Hello world</StyledText>
@@ -22,4 +22,4 @@ export function FontsPlugin() {
   );
 }
 
-export default FontsPlugin;
+export default Tailwind;
