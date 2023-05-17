@@ -18,13 +18,21 @@ const createCssRule = (
 
   if (isMedia(mediaQuery) && isColorScheme(colorSchemeQuery)) {
     // rule = `${mediaQuery} {${colorSchemeQuery} {${dataMediaSelector} ${css}} .${prefixColorMode}${colorMode} ${dataMediaSelector} ${css}}`;
-    rule = prefixClassName
-      ? `${mediaQuery} {.${prefixClassName}.${prefixColorMode}${colorMode} ${dataMediaSelector} ${css}}`
-      : `${mediaQuery} {.${prefixColorMode}${colorMode} ${dataMediaSelector} ${css}}`;
+    if (prefixClassName === 'gs') {
+      rule = `${mediaQuery} {.${prefixColorMode}${colorMode} ${dataMediaSelector} ${css}}`;
+    } else {
+      rule = prefixClassName
+        ? `${mediaQuery} {.${prefixClassName}.${prefixColorMode}${colorMode} ${dataMediaSelector} ${css}}`
+        : `${mediaQuery} {.${prefixColorMode}${colorMode} ${dataMediaSelector} ${css}}`;
+    }
   } else if (isMedia(mediaQuery)) {
-    rule = prefixClassName
-      ? `${mediaQuery} {.${prefixClassName} ${dataMediaSelector} ${css}}`
-      : `${mediaQuery} {${dataMediaSelector} ${css}}`;
+    if (prefixClassName === 'gs') {
+      `${mediaQuery} {${dataMediaSelector} ${css}}`;
+    } else {
+      rule = prefixClassName
+        ? `${mediaQuery} {.${prefixClassName} ${dataMediaSelector} ${css}}`
+        : `${mediaQuery} {${dataMediaSelector} ${css}}`;
+    }
   } else if (isColorScheme(colorSchemeQuery)) {
     // rule = `${colorSchemeQuery} {${dataMediaSelector} ${css}} .${prefixColorMode}${colorMode} ${dataMediaSelector} ${css}`;
     rule = prefixClassName
