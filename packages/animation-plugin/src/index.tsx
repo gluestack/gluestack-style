@@ -270,7 +270,7 @@ export class AnimationResolver implements IStyledPlugin {
 
   wrapperComponentMiddleWare() {
     const AnimatedPresenceComp = React.forwardRef(
-      ({ children, ...props }: any) => {
+      ({ children, ...props }: any, ref: any) => {
         const clonedChildren: any = [];
         const styledContext = useStyled();
         const CONFIG = useMemo(
