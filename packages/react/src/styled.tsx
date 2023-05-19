@@ -6,6 +6,7 @@ import React, {
   useMemo,
   useRef,
   useState,
+  useId,
 } from 'react';
 import type {
   ConfigType,
@@ -240,7 +241,7 @@ const getMergeDescendantsStyleCSSIdsAndPropsWithKey = (
   return descendantStyleObj;
 };
 
-const Context = React.createContext({});
+const Context = React.createContext<any>({});
 
 const globalStyleMap: Map<string, any> = new Map<string, any>();
 //
@@ -548,6 +549,11 @@ export function verboseStyled<P, Variants, Sizes>(
   const NewComp = (
     {
       as,
+      //@ts-ignore
+      isGroup,
+      //@ts-ignore
+      isGroupItem,
+      parentGroupId,
       ...properties
     }: P &
       Partial<ComponentProps<ReactNativeStyles, Variants>> &
@@ -556,6 +562,9 @@ export function verboseStyled<P, Variants, Sizes>(
       },
     ref: React.ForwardedRef<P>
   ) => {
+    const groupComponentId = useId();
+    const componentGroupIdWithPrefix = `group-id-${groupComponentId}`;
+
     const styledContext = useStyled();
     const CONFIG = useMemo(
       () => ({
@@ -608,7 +617,7 @@ export function verboseStyled<P, Variants, Sizes>(
       /* Boot time */
     }
 
-    const contextValue = useContext(Context);
+    const { states: contextSates, ...contextValue } = useContext(Context);
 
     const {
       cssIds: applyAncestorStyleCSSIds,
@@ -697,6 +706,31 @@ export function verboseStyled<P, Variants, Sizes>(
       verboseSx,
       ...utilityAndPassingProps
     }: any = mergedWithUtilityPropsAndPassingProps;
+
+    React.useEffect(() => {
+      if (isGroup) {
+        styledContext.updateGlobalGroupElementsStates({
+          ...styledContext.globalGroupElementsStates,
+          [componentGroupIdWithPrefix]: states,
+        });
+      }
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [states]);
+
+    const combinedStates = React.useMemo(() => {
+      if (isGroupItem) {
+        // return styledContext.globalGroupElementsStates[parentGroupId];
+        return contextSates;
+      } else {
+        return states;
+      }
+    }, [
+      states,
+      isGroupItem,
+      contextSates,
+      // styledContext,
+      //  parentGroupId
+    ]);
 
     // Inline prop based style resolution
     const resolvedInlineProps = {};
@@ -858,12 +892,12 @@ export function verboseStyled<P, Variants, Sizes>(
     // Style ids resolution
     useEffect(() => {
       // for component style
-      if (states || COLOR_MODE) {
+      if (combinedStates || COLOR_MODE) {
         const { cssIds: mergedStateIds, passingProps: stateProps }: any =
           getMergedStateAndColorModeCSSIdsAndProps(
             //@ts-ignore
             componentStyleIds,
-            states,
+            combinedStates,
             variantProps,
             COLOR_MODE,
             theme
@@ -879,7 +913,7 @@ export function verboseStyled<P, Variants, Sizes>(
         }: any = getMergedStateAndColorModeCSSIdsAndProps(
           //@ts-ignore
           sxComponentStyleIds.current,
-          states,
+          combinedStates,
           variantProps,
           COLOR_MODE,
           theme,
@@ -897,7 +931,7 @@ export function verboseStyled<P, Variants, Sizes>(
               //@ts-ignore
 
               componentDescendantStyleIds[key],
-              states,
+              combinedStates,
               variantProps,
               COLOR_MODE,
               theme
@@ -918,7 +952,7 @@ export function verboseStyled<P, Variants, Sizes>(
             getMergedStateAndColorModeCSSIdsAndProps(
               //@ts-ignore
               sxDescendantStyleIds.current[key],
-              states,
+              combinedStates,
               variantProps,
               COLOR_MODE,
               theme
@@ -937,7 +971,7 @@ export function verboseStyled<P, Variants, Sizes>(
       //   setMergedComponentProps(themeProps);
       // }
       // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [states, COLOR_MODE]);
+    }, [combinedStates, COLOR_MODE]);
 
     const descendentCSSIds = React.useMemo(() => {
       if (
@@ -1027,6 +1061,26 @@ export function verboseStyled<P, Variants, Sizes>(
       ref,
     };
 
+    let contextValues = descendentCSSIds;
+
+    if (isGroup) {
+      contextValues = {
+        ...descendentCSSIds,
+        states,
+      };
+    }
+
+    // const clonedChildren = React.Children.map(children, (child: any) => {
+    //   if (isGroup && React.isValidElement(child)) {
+    //     return React.cloneElement(child, {
+    //       //@ts-ignore
+    //       ...child?.props,
+    //       parentGroupId: componentGroupIdWithPrefix,
+    //     });
+    //   }
+    //   return child;
+    // });
+
     const component = !AsComp ? (
       <Component {...finalComponentProps}>{children}</Component>
     ) : (
@@ -1034,13 +1088,12 @@ export function verboseStyled<P, Variants, Sizes>(
     );
 
     if (
-      componentStyleConfig?.descendantStyle &&
-      componentStyleConfig?.descendantStyle?.length > 0
+      (componentStyleConfig?.descendantStyle &&
+        componentStyleConfig?.descendantStyle?.length > 0) ||
+      isGroup
     ) {
       return (
-        <Context.Provider value={descendentCSSIds}>
-          {component}
-        </Context.Provider>
+        <Context.Provider value={contextValues}>{component}</Context.Provider>
       );
     }
     return component;

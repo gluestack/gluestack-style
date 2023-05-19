@@ -1,9 +1,11 @@
-import React, { useMemo } from 'react';
+import React, { useId, useMemo } from 'react';
 import type { IStyled, IStyledPlugin } from '../../createStyled';
 import { propertyTokenMap } from '../../propertyTokenMap';
 import { useStyled } from '../../StyledProvider';
 import { deepMerge, setObjectKeyValue } from '../../utils';
-import { dankKeywords } from './utils';
+import { dankKeywords, core } from './utils';
+
+const groupElementsGlobalMap: Map<string, any> = new Map<string, any>();
 
 const resolvePsuedoSelectors = (className: string) => {
   const classes = className.split(':');
@@ -29,28 +31,12 @@ const resolveClassToStyle = (className: string) => {
   const pseudoSelectors = classname;
   const [property, ...value] = originalProperty.split('-');
 
-  // const classes = className.split('-');
-  // const stlyedObjectKeys = [];
-
-  // const [prop, ...value] = classes;
-
-  // for (const cls of classes) {
-  //   const isPsuedoSelector = cls.endsWith(':');
-
-  //   if (isPsuedoSelector) {
-  //     const psuedoSelector = cls.substring(0, cls.length - 1);
-
-  //     if (states[psuedoSelector]) {
-  //       stlyedObjectKeys.push(states[psuedoSelector]);
-  //     } else {
-  //       console.warn(className, 'is not a valid psuedo selector');
-  //     }
-  //   }
-  //   stlyedObjectKeys.push(cls);
-  // }
+  const originalCSSProperty = core[property] ?? property;
 
   return {
-    styledObjectKeys: [...pseudoSelectors, property],
+    styledObjectKeys: originalCSSProperty
+      ? [...pseudoSelectors, originalCSSProperty]
+      : [],
     value: `$${value.join('')}`,
   };
 };
@@ -85,6 +71,9 @@ export class Tailwind implements IStyledPlugin {
     const { className, ...rest } = styledObject;
     const classNameResolvedStyleObject =
       this.tailwindClassesToDankStyledObject(className);
+
+    console.log(classNameResolvedStyleObject, 'classNameResolvedStyleObject');
+
     return deepMerge(rest, classNameResolvedStyleObject);
   }
 
@@ -94,17 +83,31 @@ export class Tailwind implements IStyledPlugin {
 
     for (const cls of classes) {
       const { styledObjectKeys, value } = resolveClassToStyle(cls);
-      setObjectKeyValue(styledObject, styledObjectKeys, value);
+
+      console.log(styledObjectKeys, value, 'styledObjectKeys, value');
+
+      if (styledObjectKeys.length !== 0)
+        setObjectKeyValue(styledObject, styledObjectKeys, value);
     }
     return styledObject;
   }
 
   componentMiddleWare({ NewComp }: any) {
-    return React.forwardRef((props: any, ref: any) => {
-      const { className, ...restProps } = props;
+    return React.forwardRef((props: any, ref?: any) => {
+      const { className, children, sx, ...restProps } = props;
       const classNameResolvedStyleObject = this.inputMiddleWare({
         className: className ?? '',
       });
+      const id = useId();
+      const updatedChildren = React.Children.map(children, (child) => {
+        const clonedChildren = React.cloneElement(child, {
+          ...child?.props,
+          id: `tailwind-group-${id}`,
+        });
+        return clonedChildren;
+      });
+
+      console.log(updatedChildren, 'updatedChildren&&&&');
       // const styledContext = useStyled();
       // const CONFIG = useMemo(
       //   () => ({
@@ -118,8 +121,19 @@ export class Tailwind implements IStyledPlugin {
       //   componentExtendedConfig = deepMerge(CONFIG, extendedConfig);
       // }
 
+      console.log(
+        classNameResolvedStyleObject,
+        className,
+        'classNameResolvedStyleObject********'
+      );
+
       return (
-        <NewComp ref={ref} sx={classNameResolvedStyleObject} {...restProps} />
+        <NewComp
+          ref={ref}
+          sx={{ ...classNameResolvedStyleObject, ...sx }}
+          {...restProps}
+          children={children}
+        />
       );
     });
   }

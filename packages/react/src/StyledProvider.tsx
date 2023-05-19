@@ -8,9 +8,14 @@ import { createGlobalStylesWeb } from './createGlobalStylesWeb';
 
 type Config = any;
 
-export const defaultConfig: { config: Config; colorMode: COLORMODES } = {
+export const defaultConfig: {
+  config: Config;
+  colorMode: COLORMODES;
+  globalGroupElementsStates: {};
+} = {
   config: {},
   colorMode: 'light',
+  globalGroupElementsStates: {},
 };
 
 // interface ConfigContextData {
@@ -32,6 +37,9 @@ export const StyledProvider: React.FC<{
   children?: React.ReactNode;
   globalStyles?: any;
 }> = ({ config, colorMode, children, globalStyles }) => {
+  const [globalGroupElementsStates, setGlobalGroupElementsStates] =
+    React.useState({});
+
   const currentConfig = React.useMemo(() => {
     //TODO: Add this later
     return platformSpecificSpaceUnits(config, Platform.OS);
@@ -97,8 +105,20 @@ export const StyledProvider: React.FC<{
     }, [currentConfig, currentColorMode]);
   }
 
+  const updateGlobalGroupElementsStates = (
+    updatedGlobalGroupElmentsStates: any
+  ) => {
+    setGlobalGroupElementsStates(updatedGlobalGroupElmentsStates);
+  };
+
   return (
-    <StyledContext.Provider value={contextValue}>
+    <StyledContext.Provider
+      value={{
+        ...contextValue,
+        globalGroupElementsStates,
+        updateGlobalGroupElementsStates,
+      }}
+    >
       {children}
     </StyledContext.Provider>
   );
