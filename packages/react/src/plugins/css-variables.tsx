@@ -1,9 +1,9 @@
 import type { IStyled, IStyledPlugin } from '../createStyled';
-import { deepMerge } from '../utils';
 import { injectGlobalCss } from '../utils/css-injector';
 import React, { useMemo } from 'react';
 import { useStyled } from '../StyledProvider';
 import { propertyTokenMap } from '../propertyTokenMap';
+import { deepMerge } from '../core/utils';
 
 export class AddCssTokenVariables implements IStyledPlugin {
   name: 'AddCssTokenVariables';

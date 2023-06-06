@@ -2,8 +2,9 @@ import React, { useMemo } from 'react';
 import type { IStyled, IStyledPlugin } from '../createStyled';
 import { useStyled } from '../StyledProvider';
 import { propertyTokenMap } from '../propertyTokenMap';
-import { deepMerge, deepMergeObjects, setObjectKeyValue } from '../utils';
+import { deepMergeObjects } from '../utils';
 import { getVariantProps } from '../styled';
+import { deepMerge, setObjectKeyValue } from '../core/utils';
 
 const fontWeights: any = {
   '100': 'Thin',

@@ -1,13 +1,3 @@
-export const getObjectProperty = (object: any, keyPath: any) => {
-  if (!Array.isArray(keyPath)) {
-    keyPath = [keyPath];
-  }
-  return keyPath.reduce(
-    (baseObj: any, key: any) => baseObj && baseObj[key],
-    object
-  );
-};
-
 export const setObjectKeyValue = (obj: any, keys: any, value: any) => {
   if (!Array.isArray(keys)) {
     keys = [keys];

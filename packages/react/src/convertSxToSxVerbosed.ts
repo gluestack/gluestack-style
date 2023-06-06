@@ -1,3 +1,5 @@
+import { getObjectParentProperty, setObjectKeyValue } from './core/utils';
+
 const STATE = 'state';
 const STYLE = 'style';
 const PROPS = 'props';
@@ -28,43 +30,6 @@ const reservedKeys: any = {
     _ios: 'ios',
     _android: 'android',
   },
-};
-
-//------------------------------------------- Helper function -------------------------------------------
-const getObjectParentProperty = (obj: any, key: any, prevKey = ''): any => {
-  for (const prop in obj) {
-    if (obj.hasOwnProperty(prop)) {
-      if (prop === key) {
-        return prevKey;
-      }
-      if (obj[prop] && typeof obj[prop] === 'object') {
-        const result = getObjectParentProperty(obj[prop], key, prop);
-        if (result) {
-          return result;
-        }
-      }
-    }
-  }
-  return null;
-};
-
-const setObjectKeyValue = (obj: any, keys: any, value: any) => {
-  if (!Array.isArray(keys)) {
-    keys = [keys];
-  }
-
-  let current = obj;
-  keys?.forEach((key: any, index: any) => {
-    if (index === keys?.length - 1) {
-      current[key] = value;
-    } else {
-      if (!current[key]) {
-        current[key] = {};
-      }
-      current = current[key];
-    }
-  });
-  return obj;
 };
 
 // ------------------------------------------- Responsive props resolution -------------------------------------------

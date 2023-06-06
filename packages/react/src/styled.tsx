@@ -20,7 +20,6 @@ import type {
   IThemeNew,
 } from './types';
 import {
-  deepMerge,
   // deepMergeArray,
   getResolvedTokenValueFromConfig,
   deepMergeObjects,
@@ -47,6 +46,7 @@ import {
   convertSxToSxVerbosed,
 } from './convertSxToSxVerbosed';
 import { stableHash } from './stableHash';
+import { deepMerge } from './core/utils';
 
 function getStateStyleCSSFromStyleIdsAndProps(
   styleIdObject: IdsStateColorMode,

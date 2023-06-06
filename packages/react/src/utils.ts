@@ -1,24 +1,7 @@
+import { deepMerge } from './core/utils';
 import type { Config } from './types';
 
 // --------------------------------- 3. Preparing style map for Css Injection based on precedence --------------------------------------
-
-export const setObjectKeyValue = (obj: any, keys: any, value: any) => {
-  let current = obj;
-  for (let i = 0; i < keys.length; i++) {
-    const key = keys[i];
-    if (i === keys.length - 1) {
-      // we've reached the desired key, so update its value
-      current[key] = value;
-    } else {
-      // we're still traversing the object, so create the key if it doesn't exist
-      if (!current[key]) {
-        current[key] = {};
-      }
-      current = current[key];
-    }
-  }
-  return obj;
-};
 
 export const getObjectProperty = (object: any, keyPath: any) => {
   if (!Array.isArray(keyPath)) {
@@ -220,18 +203,6 @@ export function resolvedTokenization(props: any, config: any) {
   return newProps;
 }
 // ----------------------------------------------------- 6. Theme Boot Resolver -----------------------------------------------------
-export const deepMerge = (target: any = {}, source: any) => {
-  for (const key in source) {
-    if (source.hasOwnProperty(key)) {
-      if (typeof target[key] === 'object' && typeof source[key] === 'object') {
-        deepMerge(target[key], source[key]);
-      } else {
-        target[key] = source[key];
-      }
-    }
-  }
-  return target;
-};
 
 export function deepMergeObjects(...objects: any) {
   const isObject = (obj: any) => obj && typeof obj === 'object';
