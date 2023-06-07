@@ -82,7 +82,6 @@ export function resolveStringToken(
           !config?.tokens[token_scale].hasOwnProperty(splitCurrentToken[0])
         ) {
           modifiedTokenScale = 'space';
-          modifiedTokenScale = 'space';
         }
 
         if (
