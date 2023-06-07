@@ -82,6 +82,7 @@ export function resolveStringToken(
           !config?.tokens[token_scale].hasOwnProperty(splitCurrentToken[0])
         ) {
           modifiedTokenScale = 'space';
+          modifiedTokenScale = 'space';
         }
 
         if (
@@ -110,6 +111,9 @@ export function resolveStringToken(
   if (finalResult.length !== 0 && finalResult[0] === '') {
     return undefined;
   } else {
+    if (Array.isArray(finalResult) && typeof finalResult === 'object') {
+      return finalResult;
+    }
     finalResult = result.join(' ');
 
     if (isNumeric(finalResult) || typeofResult === 'number') {
