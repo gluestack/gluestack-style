@@ -604,7 +604,7 @@ export function verboseStyled<P, Variants>(
       theme = {
         ...theme,
         baseStyle: {
-          ...deepMerge(globalStyle?.baseStyle, theme.baseStyle),
+          ...deepMerge({ ...globalStyle?.baseStyle }, { ...theme.baseStyle }),
         },
         //@ts-ignore
         compoundVariants: [
@@ -617,6 +617,10 @@ export function verboseStyled<P, Variants>(
           ...theme.variants,
         },
       };
+
+      if (componentStyleConfig.DEBUG === 'WEBSITE LINK') {
+        console.log(theme, '__________theme');
+      }
     }
 
     const CONFIG = useMemo(
