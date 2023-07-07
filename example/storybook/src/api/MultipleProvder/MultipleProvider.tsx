@@ -81,13 +81,41 @@ const StyleText2 = styled(
 
 export function MultipleProvider() {
   const [currentColorMode, setCurrentColorMode] = React.useState(get());
+  const [gs, sgs] = React.useState(true);
+  const [ls, sls] = React.useState(true);
 
   return (
-    <Wrapper colorMode={'dark'}>
-      <StyleView>
-        <StyleText>Hello</StyleText>
+    <Wrapper colorMode={gs ? 'light' : 'dark'}>
+      <Pressable
+        onPress={() => {
+          sgs(!gs);
+        }}
+      >
+        global
+      </Pressable>
+      <Pressable
+        onPress={() => {
+          sls(!ls);
+        }}
+      >
+        local
+      </Pressable>
+      <StyleView
+        h={300}
+        w={300}
+        bg="$red400"
+        sx={{
+          _dark: {
+            bg: '$amber500',
+          },
+        }}
+      >
+        <StyleText placeholder="type something" />
       </StyleView>
-      <AppProvider colorMode="dark">
+      <Wrapper
+        colorMode={ls ? 'light' : 'dark'}
+        experimentalLocalColorMode={true}
+      >
         {/* <Pressable
           style={{
             backgroundColor: 'gray',
@@ -104,10 +132,18 @@ export function MultipleProvider() {
           </Text>
         </Pressable> */}
 
-        <StyleView2>
+        <StyleView2
+          h={100}
+          w={100}
+          sx={{
+            _dark: {
+              bg: '$amber100',
+            },
+          }}
+        >
           <StyleText2>Hello</StyleText2>
         </StyleView2>
-      </AppProvider>
+      </Wrapper>
     </Wrapper>
   );
 }

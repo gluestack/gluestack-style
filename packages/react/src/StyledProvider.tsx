@@ -1,6 +1,6 @@
 import { get, onChange, set } from './core/colorMode';
 import * as React from 'react';
-import { Platform } from 'react-native';
+import { Platform, View } from 'react-native';
 import { propertyTokenMap } from './propertyTokenMap';
 import type { COLORMODES } from './types';
 import { platformSpecificSpaceUnits } from './utils';
@@ -28,7 +28,15 @@ export const StyledProvider: React.FC<{
   colorMode?: COLORMODES;
   children?: React.ReactNode;
   globalStyles?: any;
-}> = ({ config, colorMode, children, globalStyles }) => {
+  experimentalLocalColorMode: boolean;
+}> = ({
+  config,
+  colorMode,
+  children,
+  globalStyles,
+  experimentalLocalColorMode = false,
+}) => {
+  const wrapperRef = React.useRef(null);
   const currentConfig = React.useMemo(() => {
     //TODO: Add this later
     return platformSpecificSpaceUnits(config, Platform.OS);
@@ -40,24 +48,30 @@ export const StyledProvider: React.FC<{
   }
 
   const currentColorMode = React.useMemo(() => {
+    if (experimentalLocalColorMode) {
+      return colorMode as 'light' | 'dark';
+    }
     return colorMode ?? get() ?? 'light';
-  }, [colorMode]);
+  }, [colorMode, experimentalLocalColorMode]);
 
   React.useEffect(() => {
-    // Add gs class name
+    let domElement = document.documentElement;
+    if (experimentalLocalColorMode) {
+      domElement = wrapperRef.current;
+    }
     if (Platform.OS === 'web') {
-      document.documentElement.classList.add(`gs`);
+      domElement.classList.add(`gs`);
     }
 
     onChange((currentColor: string) => {
       // only for web
       if (Platform.OS === 'web') {
         if (currentColor === 'dark') {
-          document.documentElement.classList.remove(`gs-light`);
+          domElement.classList.remove(`gs-light`);
         } else {
-          document.documentElement.classList.remove(`gs-dark`);
+          domElement.classList.remove(`gs-dark`);
         }
-        document.documentElement.classList.add(`gs-${currentColor}`);
+        domElement.classList.add(`gs-${currentColor}`);
       }
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -79,11 +93,21 @@ export const StyledProvider: React.FC<{
     return { config: currentConfig, globalStyle: globalStyleMap };
   }, [currentConfig, globalStyleMap]);
 
-  return (
-    <StyledContext.Provider value={contextValue}>
-      {children}
-    </StyledContext.Provider>
-  );
+  if (experimentalLocalColorMode) {
+    return (
+      <View ref={wrapperRef} style={{ height: 500, width: 500 }}>
+        <StyledContext.Provider value={contextValue}>
+          {children}
+        </StyledContext.Provider>
+      </View>
+    );
+  } else {
+    return (
+      <StyledContext.Provider value={contextValue}>
+        {children}
+      </StyledContext.Provider>
+    );
+  }
 };
 
 export const useStyled = () => React.useContext(StyledContext);
