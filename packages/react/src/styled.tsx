@@ -83,6 +83,32 @@ function flattenObject(obj: any) {
   return flat;
 }
 
+function convertUtiltiyToSXFromProps(
+  componentProps: any,
+  componentExtendedConfig: any,
+  componentStyleConfig: any
+) {
+  const {
+    sx: userSX,
+    verboseSx: verboseSx,
+    ...componentRestProps
+  }: any = {
+    ...componentProps,
+  };
+
+  const resolvedSXVerbosed = convertSxToSxVerbosed(userSX);
+  const { sxProps: utilityResolvedSX, mergedProps: restProps } =
+    convertUtilityPropsToSX(
+      componentExtendedConfig,
+      componentStyleConfig?.descendantStyle,
+      componentRestProps
+    );
+
+  const resolvedSxVerbose = deepMerge(utilityResolvedSX, resolvedSXVerbosed);
+  const sx = deepMerge(resolvedSxVerbose, verboseSx);
+  return { sx, rest: restProps };
+}
+
 function getStateStyleCSSFromStyleIdsAndProps(
   styleIdObject: IdsStateColorMode,
   states: any,
@@ -644,12 +670,146 @@ export function verboseStyled<P, Variants>(
 
   resolvePlatformTheme(theme, Platform.OS);
 
+  // const styledResolved = styledToStyledResolved(theme, [], CONFIG);
+  // const orderedResovled = styledResolvedToOrderedSXResolved(styledResolved);
+
+  // INTERNAL_updateCSSStyleInOrderedResolved(orderedResovled);
+  // //set css ruleset
+  // globalOrderedList.push(...orderedResovled);
+
+  // // StyleIds
+  // const componentStyleIds = getComponentStyleIds(
+  //   orderedResovled.filter((item) => !item.meta.path?.includes('descendants'))
+  // );
+
+  // if (componentStyleConfig.DEBUG === 'INPUT') {
+  //   // console.log(componentStyleIds, 'hello state here >>');
+  // }
+
+  // // Descendants
+  // const descendantStyleIds = getDescendantStyleIds(
+  //   orderedResovled.filter((item) => item.meta.path?.includes('descendants')),
+  //   componentStyleConfig.descendantStyle
+  // );
+
+  //
+
+  function injectComponentAndDescendantStyles(
+    orderedResolved: OrderedSXResolved,
+    styleTagId?: string,
+    type: 'boot' | 'inline' | 'passing' = 'boot'
+  ) {
+    // const componentOrderResolved = getComponentResolved(orderedResolved);
+    // const descendantOrderResolved = getDescendantResolved(orderedResolved);
+
+    const componentOrderResolvedBaseStyle =
+      getComponentResolvedBaseStyle(orderedResolved);
+    const componentOrderResolvedVariantStyle =
+      getComponentResolvedVariantStyle(orderedResolved);
+
+    const descendantOrderResolvedBaseStyle =
+      getDescendantResolvedBaseStyle(orderedResolved);
+    const descendantOrderResolvedVariantStyle =
+      getDescendantResolvedVariantStyle(orderedResolved);
+
+    injectInStyle(
+      globalStyleMap,
+      componentOrderResolvedBaseStyle,
+      type + '-base',
+      styleTagId ? styleTagId : 'css-injected-boot-time'
+    );
+
+    injectInStyle(
+      globalStyleMap,
+      descendantOrderResolvedBaseStyle,
+      type + '-descendant-base',
+      styleTagId ? styleTagId : 'css-injected-boot-time-descendant'
+    );
+
+    injectInStyle(
+      globalStyleMap,
+      componentOrderResolvedVariantStyle,
+      type + '-variant',
+      styleTagId ? styleTagId : 'css-injected-boot-time'
+    );
+
+    injectInStyle(
+      globalStyleMap,
+      descendantOrderResolvedVariantStyle,
+      type + '-descendant-variant',
+      styleTagId ? styleTagId : 'css-injected-boot-time-descendant'
+    );
+  }
+
+  // BASE COLOR MODE RESOLUTION
+
+  function setColorModeBaseStyleIds(styleIds: any, COLOR_MODE: any) {
+    if (COLOR_MODE) {
+      if (
+        styleIds?.baseStyle?.colorMode &&
+        styleIds?.baseStyle?.colorMode[COLOR_MODE]?.ids
+      ) {
+        styleIds.baseStyle.ids.push(
+          ...styleIds.baseStyle.colorMode[COLOR_MODE].ids
+        );
+        styleIds.baseStyle.colorMode[COLOR_MODE].ids = [];
+      }
+    }
+  }
+
+  function setColorModeBaseStyleIdsDescendant(styleIds: any, COLOR_MODE: any) {
+    if (COLOR_MODE) {
+      Object.keys(styleIds).forEach((descendantKey) => {
+        if (
+          styleIds[descendantKey]?.baseStyle?.colorMode &&
+          styleIds[descendantKey]?.baseStyle?.colorMode[COLOR_MODE]?.ids
+        ) {
+          styleIds[descendantKey].baseStyle.ids.push(
+            ...styleIds[descendantKey].baseStyle.colorMode[COLOR_MODE].ids
+          );
+          styleIds[descendantKey].baseStyle.colorMode[COLOR_MODE].ids = [];
+        }
+      });
+    }
+  }
+
+  function injectSx(sx: any, type: any = 'inline') {
+    const inlineSxTheme = {
+      baseStyle: sx,
+    };
+
+    resolvePlatformTheme(inlineSxTheme, Platform.OS);
+    const sxStyledResolved = styledToStyledResolved(
+      // @ts-ignore
+      inlineSxTheme,
+      [],
+      componentExtendedConfig
+    );
+
+    const sxHash = stableHash(sx);
+    const orderedSXResolved =
+      styledResolvedToOrderedSXResolved(sxStyledResolved);
+
+    INTERNAL_updateCSSStyleInOrderedResolved(
+      orderedSXResolved,
+      sxHash,
+      false,
+      'gs'
+    );
+
+    injectComponentAndDescendantStyles(orderedSXResolved, sxHash, type);
+
+    return orderedSXResolved;
+  }
+
+  // END BASE COLOR MODE RESOLUTION
+
   const NewComp = (
     {
       as,
       children,
       BUILD_verbosedSx,
-      ...properties
+      ...componentProps
     }: Omit<P, keyof Variants> &
       Partial<ComponentProps<ITypeReactNativeStyles, Variants, P>> &
       Partial<UtilityProps<ITypeReactNativeStyles>> & {
@@ -663,7 +823,7 @@ export function verboseStyled<P, Variants>(
     // Declare all the required StableHashes here •••••••
     // const STABLEHASH_styledContext = stableHash(styledContext);
 
-    const STABLEHASH_properties = properties;
+    // const STABLEHASH_properties = properties;
     // return <Component {...properties} ref={ref} />;
 
     const globalStyle = styledContext.globalStyle;
@@ -744,13 +904,8 @@ export function verboseStyled<P, Variants>(
       componentDescendantStyleIds = styleIds.descendant;
       // console.setStartTimeStamp('setColorModeBaseStyleIdsForWeb', 'boot');
 
-      setColorModeBaseStyleIdsForWeb(componentStyleIds, COLOR_MODE);
-      // console.setEndTimeStamp('setColorModeBaseStyleIdsForWeb', 'boot');
-      // console.setStartTimeStamp(
-      //   'setColorModeBaseStyleIdsDescendantForWeb',
-      //   'boot'
-      // );
-      setColorModeBaseStyleIdsDescendantForWeb(
+      setColorModeBaseStyleIds(componentStyleIds, COLOR_MODE);
+      setColorModeBaseStyleIdsDescendant(
         componentDescendantStyleIds,
         COLOR_MODE
       );
@@ -778,20 +933,21 @@ export function verboseStyled<P, Variants>(
       variantStyleIds: applyAncestorVariantStyleCSSIds,
     } = getAncestorCSSStyleIds(componentStyleConfig, contextValue);
 
-    // 500ms
     const incomingComponentProps = {
-      //@ts-ignore
-      // ...theme?.baseStyle?.props,
       ...applyAncestorPassingProps, // As applyAncestorPassingProps is incoming props for the descendant component
-      ...properties,
+      ...componentProps,
     };
 
     // const STABLEHASH_incomingComponentProps = stableHash(
     //   incomingComponentProps
     // );
     const { variantProps } = getVariantProps(
-      //@ts-ignore
-      { ...theme?.baseStyle?.props, ...incomingComponentProps },
+      {
+        //@ts-ignore
+        ...theme?.baseStyle?.props,
+        ...applyAncestorPassingProps,
+        ...componentProps,
+      },
       theme
     );
 
@@ -835,6 +991,7 @@ export function verboseStyled<P, Variants>(
     //
     //
     //
+
     //
     // passingProps is specific to current component
     const passingProps = deepMergeObjects(
@@ -844,18 +1001,52 @@ export function verboseStyled<P, Variants>(
       sxStatePassingProps
     );
 
+    const { sx: filteredComponentSx, rest: filteredComponentRemainingProps } =
+      convertUtiltiyToSXFromProps(
+        componentProps,
+        componentExtendedConfig,
+        componentStyleConfig
+      );
+
+    const { sx: filteredPassingSx, rest: filteredPassingRemainingProps } =
+      convertUtiltiyToSXFromProps(
+        {
+          ...passingProps,
+          ...applyAncestorPassingProps,
+        },
+        componentExtendedConfig,
+        componentStyleConfig
+      );
+
+    // if (componentStyleConfig.DEBUG === 'MYTEXT') {
+    //   console.log(
+    //     filteredComponentSx,
+    //     filteredPassingSx,
+    //     // applyAncestorPassingProps,
+    //     // applyAncestorBaseStyleCSSIds,
+    //     // applyAncestorVariantStyleCSSIds,
+    //     componentProps,
+    //     '>>>>>'
+    //   );
+    // }
+
+    const remainingComponentProps = {
+      ...filteredPassingRemainingProps,
+      ...filteredComponentRemainingProps,
+    };
+
     const mergedWithUtilityPropsAndPassingProps = {
-      // ...restProps,
       ...passingProps,
-      ...incomingComponentProps,
+      ...applyAncestorPassingProps,
+      ...componentProps,
     };
 
     const {
       states,
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      colorMode,
-      sx: userSX,
-      verboseSx,
+      sx: _sx,
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      verboseSx: _versbosedSx,
       ...utilityAndPassingProps
     }: any = mergedWithUtilityPropsAndPassingProps;
 
@@ -906,16 +1097,9 @@ export function verboseStyled<P, Variants>(
       });
     }
 
+    // const { sx, remainingComponentProps } = filterSx(mergedSx, mergedVerboseSx);
     // TODO: filter for inline props like variant and sizes
 
-    const { sxProps: utilityResolvedSX, mergedProps: remainingComponentProps } =
-      convertUtilityPropsToSX(
-        componentExtendedConfig,
-        componentStyleConfig?.descendantStyle,
-        utilityAndPassingProps
-      );
-    // return <Component {...properties} ref={ref} />;
-    // 720ms
     const [
       applyComponentStateBaseStyleIds,
       setApplyComponentStateBaseStyleIds,
@@ -948,100 +1132,83 @@ export function verboseStyled<P, Variants>(
     // const styleTagId = useRef(`style-tag-sx-${stableHash(sx)}`);
 
     // FOR SX RESOLUTION
-    let orderedSXResolved: OrderedSXResolved = [];
-    let STABLEHASH_sx = '';
-    if (BUILD_verbosedSx) {
-      orderedSXResolved = BUILD_verbosedSx.orderedSXResolved;
-      STABLEHASH_sx = BUILD_verbosedSx.STABLEHASH_sx;
-    } else {
-      // console.log(
-      //   userSX,
-      //   verboseSx,
-      //   utilityResolvedSX
-      //   // componentExtendedConfig
-      // );
-      const {
-        orderedSXResolved: tempOrderedSXResolved,
-        STABLEHASH_sx: tempSTABLEHASH_sx,
-      } = resolveBuildTimeSx(
-        userSX,
-        verboseSx,
-        utilityResolvedSX,
-        componentExtendedConfig
+
+    if (
+      Object.keys(filteredComponentSx).length > 0 ||
+      Object.keys(filteredPassingSx).length > 0
+    ) {
+      const orderedComponentSXResolved = injectSx(
+        filteredComponentSx,
+        'inline'
       );
-      orderedSXResolved = tempOrderedSXResolved;
-      STABLEHASH_sx = tempSTABLEHASH_sx;
-    }
+      // orderedSXResolved = tempOrderedSXResolved;
+      // STABLEHASH_sx = tempSTABLEHASH_sx;
+      const orderedPassingSXResolved = injectSx(filteredPassingSx, 'passing');
+      const orderedSXResolved = [
+        ...orderedPassingSXResolved,
+        ...orderedComponentSXResolved,
+      ];
 
-    INTERNAL_updateCSSStyleInOrderedResolved(
-      orderedSXResolved,
-      STABLEHASH_sx,
-      false,
-      'gs'
-    );
-    // console.setEndTimeStamp('INTERNAL_updateCSSStyleInOrderedResolved');
-    // console.setStartTimeStamp('injectComponentAndDescendantStyles');
+      const sxStyleIds = getStyleIds(orderedSXResolved, componentStyleConfig);
+      // 725ms
 
-    injectComponentAndDescendantStyles(
-      orderedSXResolved,
-      STABLEHASH_sx,
-      'inline'
-    );
-    // console.setEndTimeStamp('injectComponentAndDescendantStyles');
+      // console.setEndTimeStamp('getStyleIds');
 
-    // console.setStartTimeStamp('getStyleIds');
-
-    const sxStyleIds = getStyleIds(orderedSXResolved, componentStyleConfig);
-    // 725ms
-
-    // console.setEndTimeStamp('getStyleIds');
-
-    // Setting variants to sx property for inline variant resolution
-    //@ts-ignore
-    sxStyleIds.component.variants = componentStyleIds.variants;
-    //@ts-ignore
-    sxStyleIds.component.compoundVariants = componentStyleIds.compoundVariants;
-
-    // console.setStartTimeStamp('setColorModeBaseStyleIdsForWeb');
-    setColorModeBaseStyleIdsForWeb(sxStyleIds.component, COLOR_MODE);
-    // console.setEndTimeStamp('setColorModeBaseStyleIdsForWeb');
-
-    // console.setStartTimeStamp('setColorModeBaseStyleIdsDescendantForWeb');
-    setColorModeBaseStyleIdsDescendantForWeb(sxStyleIds.descendant, COLOR_MODE);
-    // console.setEndTimeStamp('setColorModeBaseStyleIdsDescendantForWeb');
-
-    // setColorModeBaseStyleIdsForWeb(sxStyleIds.component, COLOR_MODE);
-    // setColorModeBaseStyleIdsForWeb(sxStyleIds.descendant, COLOR_MODE);
-    sxComponentStyleIds.current = sxStyleIds.component;
-    sxDescendantStyleIds.current = sxStyleIds.descendant;
-    //
-
-    // SX component style
-    //@ts-ignore
-    const {
-      baseStyleCSSIds: sxBaseStyleCSSIds,
-      variantStyleCSSIds: sxVariantStyleCSSIds,
-      passingProps: sxPassingProps,
-    } = getMergedDefaultCSSIdsAndProps(
+      // Setting variants to sx property for inline variant resolution
       //@ts-ignore
-      sxComponentStyleIds.current,
-      variantProps,
-      theme,
-      incomingComponentProps
-    );
+      sxStyleIds.component.variants = componentStyleIds.variants;
+      //@ts-ignore
+      sxStyleIds.component.compoundVariants =
+        componentStyleIds.compoundVariants;
 
-    //@ts-ignore
-    // applySxStyleCSSIds.current = sxStyleCSSIds;
+      // console.setStartTimeStamp('setColorModeBaseStyleIdsForWeb');
+      setColorModeBaseStyleIdsForWeb(sxStyleIds.component, COLOR_MODE);
+      // console.setEndTimeStamp('setColorModeBaseStyleIdsForWeb');
 
-    //@ts-ignore
+      // console.setStartTimeStamp('setColorModeBaseStyleIdsDescendantForWeb');
+      setColorModeBaseStyleIdsDescendantForWeb(
+        sxStyleIds.descendant,
+        COLOR_MODE
+      );
+      // console.setEndTimeStamp('setColorModeBaseStyleIdsDescendantForWeb');
 
-    applySxBaseStyleCSSIds.current = sxBaseStyleCSSIds;
-    //@ts-ignore
+      // setColorModeBaseStyleIdsForWeb(sxStyleIds.component, COLOR_MODE);
+      // setColorModeBaseStyleIdsForWeb(sxStyleIds.descendant, COLOR_MODE);
+      sxComponentStyleIds.current = sxStyleIds.component;
+      sxDescendantStyleIds.current = sxStyleIds.descendant;
+      //
 
-    applySxVariantStyleCSSIds.current = sxVariantStyleCSSIds;
+      // SX component style
+      //@ts-ignore
+      const {
+        baseStyleCSSIds: sxBaseStyleCSSIds,
+        variantStyleCSSIds: sxVariantStyleCSSIds,
+        passingProps: sxPassingProps,
+      } = getMergedDefaultCSSIdsAndProps(
+        //@ts-ignore
+        sxComponentStyleIds.current,
+        variantProps,
+        theme,
+        incomingComponentProps
+      );
 
-    sxComponentPassingProps.current = sxPassingProps;
-    // SX descendants
+      setColorModeBaseStyleIds(sxStyleIds.component, COLOR_MODE);
+      setColorModeBaseStyleIdsDescendant(sxStyleIds.descendant, COLOR_MODE);
+
+      // setColorModeBaseStyleIds(sxStyleIds.component, COLOR_MODE);
+      // setColorModeBaseStyleIds(sxStyleIds.descendant, COLOR_MODE);
+      sxComponentStyleIds.current = sxStyleIds.component;
+      sxDescendantStyleIds.current = sxStyleIds.descendant;
+      //
+
+      applySxBaseStyleCSSIds.current = sxBaseStyleCSSIds;
+      //@ts-ignore
+
+      applySxVariantStyleCSSIds.current = sxVariantStyleCSSIds;
+
+      sxComponentPassingProps.current = sxPassingProps;
+      // SX descendants
+    }
 
     //@ts-ignore
     applySxDescendantStyleCSSIdsAndPropsWithKey.current =
@@ -1221,13 +1388,22 @@ export function verboseStyled<P, Variants>(
 
     // const remainingComponentPropsWithoutVariants = getRemainingProps
     const finalComponentProps = {
-      ...passingProps,
+      // ...passingProps,
       ...resolvedInlineProps,
       ...resolvedStyleProps,
       ...remainingComponentProps,
       style: finalStyleBasedOnSpecificity,
       ref,
     };
+
+    // if (componentStyleConfig.DEBUG === 'MYTEXT') {
+    //   console.log(
+    //     // finalComponentProps,
+    //     passingProps,
+    //     componentProps,
+    //     'hello world 22'
+    //   );
+    // }
 
     const component = !AsComp ? (
       <Component {...finalComponentProps}>{children}</Component>
