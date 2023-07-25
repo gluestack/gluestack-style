@@ -7,7 +7,7 @@ import type {
 } from '../types';
 // import { isValidBreakpoint } from './is-valid-breakpoint';
 
-export class GluestackStyleSheetX {
+export class StylesInjector {
   #globalStyleMap: GlobalStyleMap;
   #stylesMap: any;
   platform: any;
@@ -139,7 +139,7 @@ export class GluestackStyleSheetX {
   }
 }
 
-const stylesheet = new GluestackStyleSheetX();
+const stylesheet = new StylesInjecter();
 
 export const GluestackStyleSheet = {
   update: stylesheet.update.bind(stylesheet),

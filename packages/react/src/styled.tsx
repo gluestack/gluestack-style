@@ -181,7 +181,6 @@ export function resolveBuildTimeSx(
       componentExtendedConfig
     );
     orderedSXResolved = styledResolvedToOrderedSXResolved(sxStyledResolved);
-    console.log(sxStyledResolved, orderedSXResolved, '!!!!!!@@@');
   }
   return {
     orderedSXResolved,
