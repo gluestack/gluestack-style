@@ -145,8 +145,8 @@ const ListYourPlaceModal = ({ modalVisible, setModalVisible }: any) => {
         </Modal.Header>
         <Modal.Body>
           <VStack space="md">
-            {/* <ModalContent1 /> */}
-            {getModalStepContent(modalFormStep)}
+            <ModalContent1 />
+            {/* {getModalStepContent(modalFormStep)} */}
           </VStack>
         </Modal.Body>
       </Modal.Content>

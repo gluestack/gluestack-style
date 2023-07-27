@@ -63,6 +63,11 @@ const HomestayPage = () => {
           }
         }
       />
+      <MobileBottomTabs
+        activeTab={activeTab}
+        setActiveTab={setActiveTab}
+        bottomTabs={bottomTabs}
+      />
 
       <Box flex={1}>
         <MobileProfilePage isActive={activeTab === 'Profile'} />
@@ -90,13 +95,7 @@ const HomestayPage = () => {
         }}
         borderTopWidth="$1"
         borderColor="$borderLight50"
-      >
-        <MobileBottomTabs
-          activeTab={activeTab}
-          setActiveTab={setActiveTab}
-          bottomTabs={bottomTabs}
-        />
-      </Box>
+      ></Box>
     </Box>
   );
 };

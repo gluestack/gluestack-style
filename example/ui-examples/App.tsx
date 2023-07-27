@@ -3,9 +3,9 @@ import React from 'react';
 import {
   Pressable,
   SafeAreaView,
-  ScrollView,
+  // ScrollView,
   StyleSheet,
-  View,
+  // View,
 } from 'react-native';
 import { Button, GluestackUIProvider } from './gluestack-ui-components';
 import { config } from './gluestack-ui.config';
@@ -21,15 +21,15 @@ import {
 import './styles';
 import HomestayPage from './kitchensink-components/HomestayPage';
 import { styled } from '@gluestack-style/react';
-import {
-  styledToStyledResolved,
-  styledResolvedToOrderedSXResolved,
-  injectComponentAndDescendantStyles,
-  getStyleIds,
-} from '@gluestack-style/react/resolver';
-import { propertyTokenMap } from '@gluestack-style/react/propertyTokenMap';
-import { INTERNAL_updateCSSStyleInOrderedResolved } from '@gluestack-style/react/updateCSSStyleInOrderedResolved';
-import { stableHash } from '@gluestack-style/react/stableHash';
+// import {
+//   styledToStyledResolved,
+//   styledResolvedToOrderedSXResolved,
+//   injectComponentAndDescendantStyles,
+//   getStyleIds,
+// } from '@gluestack-style/react/resolver';
+// import { propertyTokenMap } from '@gluestack-style/react/propertyTokenMap';
+// import { INTERNAL_updateCSSStyleInOrderedResolved } from '@gluestack-style/react/updateCSSStyleInOrderedResolved';
+// import { stableHash } from '@gluestack-style/react/stableHash';
 
 // const orderedSXResolved = [
 //   {
@@ -75,13 +75,13 @@ import { stableHash } from '@gluestack-style/react/stableHash';
 
 // const Box = styled(View, {});
 
-const BaseButton = styled(Pressable, {
+const Box = styled(Pressable, {
   bg: '$amber500',
   h: '$10',
   w: '$10',
 });
 
-const ComposedButton = styled(BaseButton, {
+const ComposedBox = styled(Box, {
   bg: '$red500',
 });
 
@@ -136,6 +136,17 @@ export default function App() {
             <ThemeContext.Provider value={{ colorMode, toggleColorMode }}>
               {/* <BaseButton>Hello Worlddddd</BaseButton>
               <ComposedButton>Hello</ComposedButton> */}
+              {/* <Button>
+                <Button.Text onPress={() => console.getPerformanceReport()}>
+                  Click me
+                </Button.Text>
+              </Button> */}
+              <Box />
+              <ComposedBox />
+              {/* <Box />
+              <Button action="primary">
+                <Button.Text>Hello world</Button.Text>
+              </Button> */}
               <HomestayPage />
             </ThemeContext.Provider>
           </GluestackUIProvider>
