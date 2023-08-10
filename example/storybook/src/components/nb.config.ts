@@ -1,6 +1,8 @@
 import { createConfig } from '@gluestack-style/react';
+import { Motion } from '@legendapp/motion';
+import { AnimationResolver } from '@gluestack-style/animation-plugin';
 
-export const config = {
+export const config = createConfig({
   aliases: {
     bg: 'backgroundColor',
     backgroundColor: 'backgroundColor',
@@ -684,7 +686,27 @@ export const config = {
   //     //   // }
   //   },
   // } as const,
-} as const;
+  plugins: [
+    new AnimationResolver({
+      driver: {
+        instance: Motion,
+        name: 'legend/motion',
+      },
+    }),
+  ],
+  themes: {
+    light: {
+      colors: {
+        textColor: '$blue700',
+      },
+    },
+    dark: {
+      colors: {
+        textColor: '$blue300',
+      },
+    },
+  },
+} as const);
 
 type ConfigType = typeof config;
 

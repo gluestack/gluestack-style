@@ -1,11 +1,11 @@
 import React from 'react';
 import { Wrapper } from '../../components/Wrapper';
 import { Motion } from '@legendapp/motion';
+// import { MotionLinearGradient as LinearGradient } from '@legendapp/motion/linear-gradient';
+// import { MotionSvg as Svg } from '@legendapp/motion/svg';
 import { Pressable, View } from 'react-native';
-import { createStyled } from '@gluestack-style/react';
-import { AnimationResolver } from '@gluestack-style/animation-plugin';
-
-const styled = createStyled([new AnimationResolver()]) as any;
+import { styled, ThemeProvider } from '@gluestack-style/react';
+// import { MotiView } from 'moti';
 
 const images = [require('./1.png'), require('./2.png'), require('./3.png')];
 
@@ -18,6 +18,10 @@ const StyledMotionImage = styled(Motion.Image, {
     opacity: 1,
   },
 });
+console.log(
+  'xyz',
+  JSON.parse(JSON.stringify(StyledMotionImage.AnimatePresence))
+);
 
 export function AnimationPlugin() {
   const [imageIndex, setImageIndex] = React.useState(0);
@@ -25,19 +29,25 @@ export function AnimationPlugin() {
 
   return (
     <Wrapper>
-      <Box
-        sx={{
-          'position': 'relative',
-          'justifyContent': 'center',
-          'width': '100%',
-          'height': 200,
-          '@sm': {
-            height: 400,
-          },
-          'aspectRatio': 1 * 1.4,
-        }}
-      >
-        <styled.Component>
+      {/* <MotiView
+        from={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ type: 'timing' }}
+      /> */}
+      <ThemeProvider theme="dark">
+        <Box
+          sx={{
+            'position': 'relative',
+            'justifyContent': 'center',
+            'width': '100%',
+            'height': 200,
+            '@sm': {
+              height: 400,
+            },
+            'aspectRatio': 1 * 1.4,
+          }}
+        >
+          {/* <StyledMotionImage.AnimatePresence> */}
           <StyledMotionImage
             style={{
               width: '100%',
@@ -61,49 +71,50 @@ export function AnimationPlugin() {
               },
             }}
           />
-        </styled.Component>
-      </Box>
-      <Pressable
-        accessibilityRole="button"
-        style={{
-          position: 'absolute',
-          backgroundColor: 'white',
-          borderRadius: 30,
-          width: 40,
-          height: 40,
-          justifyContent: 'center',
-          alignItems: 'center',
-          zIndex: 2,
-          right: 10,
-        }}
-        onPress={() => {
-          setXPosition(1000);
-          setImageIndex((prev) => (prev + 1) % images.length);
-        }}
-      >
-        {'‣'}
-      </Pressable>
-      <Pressable
-        accessibilityRole="button"
-        style={{
-          position: 'absolute',
-          backgroundColor: 'white',
-          borderRadius: 30,
-          width: 40,
-          height: 40,
-          justifyContent: 'center',
-          alignItems: 'center',
-          zIndex: 2,
-          left: 10,
-          transform: [{ scale: -1 }],
-        }}
-        onPress={() => {
-          setXPosition(-1000);
-          setImageIndex((prev) => (prev - 1 + images.length) % images.length);
-        }}
-      >
-        {'‣'}
-      </Pressable>
+          {/* </StyledMotionImage.AnimatePresence> */}
+        </Box>
+        <Pressable
+          accessibilityRole="button"
+          style={{
+            position: 'absolute',
+            backgroundColor: 'white',
+            borderRadius: 30,
+            width: 40,
+            height: 40,
+            justifyContent: 'center',
+            alignItems: 'center',
+            zIndex: 2,
+            right: 10,
+          }}
+          onPress={() => {
+            setXPosition(1000);
+            setImageIndex((prev) => (prev + 1) % images.length);
+          }}
+        >
+          {'‣'}
+        </Pressable>
+        <Pressable
+          accessibilityRole="button"
+          style={{
+            position: 'absolute',
+            backgroundColor: 'white',
+            borderRadius: 30,
+            width: 40,
+            height: 40,
+            justifyContent: 'center',
+            alignItems: 'center',
+            zIndex: 2,
+            left: 10,
+            transform: [{ scale: -1 }],
+          }}
+          onPress={() => {
+            setXPosition(-1000);
+            setImageIndex((prev) => (prev - 1 + images.length) % images.length);
+          }}
+        >
+          {'‣'}
+        </Pressable>
+      </ThemeProvider>
     </Wrapper>
   );
 }

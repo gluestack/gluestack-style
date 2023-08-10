@@ -35,7 +35,8 @@ import { propertyTokenMap } from './propertyTokenMap';
 import { Platform, View } from 'react-native';
 import { INTERNAL_updateCSSStyleInOrderedResolved } from './updateCSSStyleInOrderedResolved';
 import { generateStylePropsFromCSSIds } from './generateStylePropsFromCSSIds';
-
+import { getInstalledPlugins } from './createConfig';
+import { useActiveTheme } from './ThemeProvider';
 import { get, onChange } from './core/colorMode';
 import {
   getComponentResolvedBaseStyle,
@@ -993,16 +994,21 @@ export function verboseStyled<P, Variants>(
 
     const COLOR_MODE: any = get();
 
+    const activeTheme = useActiveTheme().theme;
     if (!styleHashCreated) {
+
+      const themes = styledContext.config.themes;
       CONFIG = {
         ...styledContext.config,
         propertyTokenMap,
       };
+          // Merging the theme with the active theme
+      deepMerge(CONFIG.tokens, themes[activeTheme]);
       Object.assign(styledSystemProps, CONFIG?.aliases);
-
+// @ts-ignore
       themeDefaultProps = { ...theme.baseStyle?.props };
       const globalStyle = styledContext.globalStyle;
-
+    
       // ToBeRenderComponent = React.createElement(Component);
       // GluestackStyleSheet.resolve(CONFIG);
       // GluestackStyleSheet.injectInStyle();
@@ -1554,15 +1560,51 @@ export function styled<P, Variants>(
       theme
     );
   }
+  let styledObj: any = theme;
+
+  // console.log('styledObj', styledObj);
+
+  const plugins = getInstalledPlugins();
+
+  for (const pluginName in plugins) {
+    styledObj = plugins[pluginName]?.inputMiddleWare(styledObj, true, true);
+  }
+  theme = styledObj;
 
   const sxConvertedObject = convertStyledToStyledVerbosed(theme);
-  const StyledComponent = verboseStyled<P, Variants>(
+  let StyledComponent = verboseStyled<P, Variants>(
     Component,
     sxConvertedObject,
     componentStyleConfig,
     ExtendedConfig,
     BUILD_TIME_PARAMS
   );
+
+  plugins?.reverse();
+  for (const pluginName in plugins) {
+    if (plugins[pluginName]?.componentMiddleWare) {
+      StyledComponent = plugins[pluginName]?.componentMiddleWare({
+        Component: StyledComponent,
+        theme,
+        componentStyleConfig,
+        ExtendedConfig,
+      });
+    }
+  }
+
+  for (const pluginName in plugins) {
+    const compWrapper =
+      typeof plugins[pluginName].wrapperComponentMiddleWare === 'function'
+        ? plugins[pluginName].wrapperComponentMiddleWare()
+        : null;
+
+    if (compWrapper) {
+      for (const key of Object.keys(compWrapper)) {
+        // @ts-ignore
+        StyledComponent[key] = compWrapper[key];
+      }
+    }
+  }
 
   return StyledComponent;
 }

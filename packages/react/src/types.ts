@@ -72,6 +72,8 @@ export type GlueStackConfig<
   tokens: IToken;
   aliases: IGlobalAliases;
   globalStyle?: GlobalStyles<IGlobalAliases, IToken, IGlobalStyle>;
+  plugins?: Array<any>;
+  themes?: ThemeStyles<Tokens>;
 };
 
 export type InferConfig<Conf> = Conf extends GlueStackConfig<
@@ -193,6 +195,12 @@ type GlobalVariantType<Variants, AliasTypes, TokenTypes> = {
       }
     >;
   };
+};
+
+
+export type ThemeStyles<Tokens> = {
+  // @ts-ignore
+  [key: string]: Tokens;
 };
 
 export type GlobalStyles<AliasTypes, TokenTypes, Variants> = GlobalVariantSx<

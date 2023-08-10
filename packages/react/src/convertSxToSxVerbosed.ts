@@ -53,17 +53,17 @@ const setObjectKeyValue = (obj: any, keys: any, value: any) => {
     keys = [keys];
   }
 
-  let current = obj;
   keys?.forEach((key: any, index: any) => {
     if (index === keys?.length - 1) {
-      current[key] = value;
+      obj[key] = value;
     } else {
-      if (!current[key]) {
-        current[key] = {};
+      if (!obj[key]) {
+        obj[key] = {};
       }
-      current = current[key];
+      obj = obj[key];
     }
   });
+
   return obj;
 };
 
@@ -113,7 +113,8 @@ export function resolveStyledPropsRecursively(
   theme: any = {},
   path: any = [],
   sxVerbosed: any = {},
-  breakpoint: any = ''
+  breakpoint: any = '',
+  debug = false
 ) {
   // console.setStartTimeStamp('resolvedStyledPropsRecursively', 'boot');
 
@@ -122,7 +123,13 @@ export function resolveStyledPropsRecursively(
   themeKeys?.forEach((prop) => {
     if (reservedKeys.state[prop]) {
       path.push(STATE, prop.slice(1));
-      resolveStyledPropsRecursively(theme[prop], path, sxVerbosed, breakpoint);
+      resolveStyledPropsRecursively(
+        theme[prop],
+        path,
+        sxVerbosed,
+        breakpoint,
+        debug
+      );
       path.pop();
       path.pop();
     } else if (prop?.startsWith('_')) {
@@ -134,7 +141,13 @@ export function resolveStyledPropsRecursively(
         path.push(DESCENDANTS, prop);
       }
 
-      resolveStyledPropsRecursively(theme[prop], path, sxVerbosed, breakpoint);
+      resolveStyledPropsRecursively(
+        theme[prop],
+        path,
+        sxVerbosed,
+        breakpoint,
+        debug
+      );
 
       path.pop();
       path.pop();
@@ -144,7 +157,8 @@ export function resolveStyledPropsRecursively(
         theme[prop],
         path,
         sxVerbosed,
-        breakpointValue
+        breakpointValue,
+        debug
       );
     } else if (prop === 'props') {
       const propValue = theme[prop];
@@ -170,6 +184,14 @@ export function resolveStyledPropsRecursively(
 
   //if (theme.props) console.log(sxVerbosed);
   // console.setEndTimeStamp('resolvedStyledPropsRecursively', 'boot');
+  // if (debug)
+  // console.log(
+  //   '@@start',
+  //   path,
+  //   JSON.parse(JSON.stringify(sxVerbosed)),
+  //   prop
+  // );
+
   return sxVerbosed;
 }
 
@@ -196,7 +218,6 @@ function resolveVariantSize(theme: any) {
 
 export function convertStyledToStyledVerbosed(theme: any) {
   // console.setStartTimeStamp('converStyledToStyledVerbosed', 'boot');
-
   const {
     variants = {},
     compoundVariants = [],
@@ -208,8 +229,15 @@ export function convertStyledToStyledVerbosed(theme: any) {
     variants: {},
     compoundVariants: [],
   };
+  let debug = theme.xyz ? true : false;
+  const sxConvertedBaseStyle = resolveStyledPropsRecursively(
+    restTheme,
+    undefined,
+    undefined,
+    undefined,
+    debug
+  );
 
-  const sxConvertedBaseStyle = resolveStyledPropsRecursively(restTheme);
   setObjectKeyValue(verbosedStyledTheme, 'baseStyle', sxConvertedBaseStyle);
 
   Object.keys(variants).forEach((variant) => {
@@ -264,7 +292,7 @@ export function convertStyledToStyledVerbosed(theme: any) {
 }
 
 export function convertSxToSxVerbosed(sx: any) {
-  if (!sx) return {};
   const sxVerboseTheme = resolveStyledPropsRecursively(sx);
+
   return sxVerboseTheme;
 }

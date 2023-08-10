@@ -7,9 +7,9 @@ import {
   setObjectKeyValue,
   resolvedTokenization,
 } from './utils';
-import { AnimatePresence } from '@legendapp/motion';
 import { propertyTokenMap } from './propertyTokenMap';
-
+import { LegendMotionDriver } from './LegendMotionDriver';
+import { MotiDriver } from './MotiDriver';
 function tokenizeAnimationPropsFromConfig(
   props: any = {},
   config: any,
@@ -97,8 +97,10 @@ export class AnimationResolver implements IStyledPlugin {
       ':onAnimationComplete': 'onAnimationComplete',
     },
   };
-
-  register(styledUtils: any) {
+  driverName: 'moti' | 'legend/motion' = 'moti';
+  Animated: any;
+  animationResolverPlugin = this;
+  register(styledUtils: IStyled) {
     if (this.styledUtils) {
       this.styledUtils.aliases = {
         ...this.styledUtils?.aliases,
@@ -110,6 +112,22 @@ export class AnimationResolver implements IStyledPlugin {
         ...styledUtils?.tokens,
       };
 
+      // if (styledUtils?.driver) {
+      //   this.driverName = styledUtils?.driver.name;
+      //   switch (styledUtils?.driver.name) {
+      //     case 'moti':
+      //       this.Animated = new MotiDriver(styledUtils?.driver.instance);
+      //       break;
+      //     case 'legend/motion':
+      //       this.Animated = new LegendMotionDriver(
+      //         styledUtils?.driver.instance
+      //       );
+      //       break;
+      //     default:
+      //       this.Animated = new MotiDriver(styledUtils?.driver.instance);
+      //       break;
+      //   }
+      // }
       this.styledUtils.ref = styledUtils?.ref;
     }
   }
@@ -123,12 +141,19 @@ export class AnimationResolver implements IStyledPlugin {
 
   #extendedConfig: any = {};
 
-  inputMiddleWare(styledObj: any = {}, shouldUpdateConfig: any = true) {
+  inputMiddleWare(
+    styledObj: any = {},
+    shouldUpdateConfig: any = true,
+    debug: boolean = false
+  ) {
     // this.#childrenExitPropsMap = deepClone(styledObj);
 
     const resolvedAnimatedProps = this.updateStyledObject(
       styledObj,
-      shouldUpdateConfig
+      shouldUpdateConfig,
+      {},
+      [],
+      debug
     );
     const resolvedStyledObjectWithAnimatedProps = deepMerge(
       styledObj,
@@ -138,7 +163,6 @@ export class AnimationResolver implements IStyledPlugin {
     if (shouldUpdateConfig) {
       return styledObj;
     }
-
     return resolvedStyledObjectWithAnimatedProps;
   }
 
@@ -146,7 +170,8 @@ export class AnimationResolver implements IStyledPlugin {
     styledObject: any = {},
     shouldUpdateConfig: boolean,
     resolvedStyledObject: any = {},
-    keyPath: string[] = []
+    keyPath: string[] = [],
+    debug: boolean = false
   ) {
     const aliases = this.styledUtils?.aliases;
     for (const prop in styledObject) {
@@ -156,7 +181,8 @@ export class AnimationResolver implements IStyledPlugin {
           styledObject[prop],
           shouldUpdateConfig,
           resolvedStyledObject,
-          keyPath
+          keyPath,
+          debug
         );
         keyPath.pop();
       }
@@ -178,16 +204,15 @@ export class AnimationResolver implements IStyledPlugin {
         delete styledObject[prop];
       }
     }
-
     return resolvedStyledObject;
   }
 
-  componentMiddleWare({ NewComp, extendedConfig }: any) {
+  componentMiddleWare({ Component, ExtendedConfig }: any) {
     const styledConfig = this.#childrenExitPropsMap;
 
     this.#childrenExitPropsMap = {};
 
-    const Component = React.forwardRef((props: any, ref?: any) => {
+    const NewComponent = React.forwardRef((props: any, ref?: any) => {
       const { sx, ...rest } = props;
 
       const styledContext = useStyled();
@@ -199,8 +224,8 @@ export class AnimationResolver implements IStyledPlugin {
         [styledContext.config]
       );
       this.#extendedConfig = CONFIG;
-      if (extendedConfig) {
-        this.#extendedConfig = deepMerge(CONFIG, extendedConfig);
+      if (ExtendedConfig) {
+        this.#extendedConfig = deepMerge(CONFIG, ExtendedConfig);
       }
 
       let tokenizedAnimatedProps: any = {};
@@ -251,7 +276,7 @@ export class AnimationResolver implements IStyledPlugin {
         : {};
 
       return (
-        <NewComp
+        <Component
           {...animatedProps}
           sx={resolvedAnimatedStyledWithStyledObject}
           {...restProps}
@@ -261,15 +286,15 @@ export class AnimationResolver implements IStyledPlugin {
     });
 
     //@ts-ignore
-    Component.styled = {};
+    NewComponent.styled = {};
     //@ts-ignore
-    Component.styled.config = {};
+    NewComponent.styled.config = {};
     //@ts-ignore
-    Component.styled.config = styledConfig;
+    NewComponent.styled.config = styledConfig;
 
-    Component.displayName = 'StyledComponent';
+    NewComponent.displayName = 'StyledComponent';
 
-    return Component;
+    return NewComponent;
   }
 
   wrapperComponentMiddleWare() {
@@ -342,6 +367,7 @@ export class AnimationResolver implements IStyledPlugin {
             clonedChildren.push(child);
           }
         });
+        const AnimatePresence = this.Animated.AnimatePresence;
 
         return (
           <AnimatePresence ref={ref} {...props}>
@@ -350,9 +376,7 @@ export class AnimationResolver implements IStyledPlugin {
         );
       }
     );
-
     AnimatedPresenceComp.displayName = `AnimatePresence`;
-
     return {
       AnimatePresence: AnimatedPresenceComp,
     };
