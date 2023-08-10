@@ -996,19 +996,18 @@ export function verboseStyled<P, Variants>(
 
     const activeTheme = useActiveTheme().theme;
     if (!styleHashCreated) {
-
       const themes = styledContext.config.themes;
       CONFIG = {
         ...styledContext.config,
         propertyTokenMap,
       };
-          // Merging the theme with the active theme
+      // Merging the theme with the active theme
       deepMerge(CONFIG.tokens, themes[activeTheme]);
       Object.assign(styledSystemProps, CONFIG?.aliases);
-// @ts-ignore
+      // @ts-ignore
       themeDefaultProps = { ...theme.baseStyle?.props };
       const globalStyle = styledContext.globalStyle;
-    
+
       // ToBeRenderComponent = React.createElement(Component);
       // GluestackStyleSheet.resolve(CONFIG);
       // GluestackStyleSheet.injectInStyle();
@@ -1572,6 +1571,7 @@ export function styled<P, Variants>(
   theme = styledObj;
 
   const sxConvertedObject = convertStyledToStyledVerbosed(theme);
+
   let StyledComponent = verboseStyled<P, Variants>(
     Component,
     sxConvertedObject,

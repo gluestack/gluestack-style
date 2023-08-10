@@ -18,10 +18,7 @@ const StyledMotionImage = styled(Motion.Image, {
     opacity: 1,
   },
 });
-console.log(
-  'xyz',
-  JSON.parse(JSON.stringify(StyledMotionImage.AnimatePresence))
-);
+console.log('xyz', JSON.parse(JSON.stringify(StyledMotionImage)));
 
 export function AnimationPlugin() {
   const [imageIndex, setImageIndex] = React.useState(0);
