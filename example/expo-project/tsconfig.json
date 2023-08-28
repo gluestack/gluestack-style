@@ -1,14 +1,16 @@
 {
-  "include": ["./src"],
-  "exclude": ["node_modules", "example"],
+  "extends": "expo/tsconfig.base",
   "compilerOptions": {
+    "baseUrl": ".",
+    "paths": {
+      "@gluestack-style/react": ["../../packages/react/src"]
+    },
     "emitDeclarationOnly": true,
     "noEmit": false,
     "declaration": true,
     "allowUnreachableCode": false,
     "allowUnusedLabels": true,
     "esModuleInterop": true,
-    "importsNotUsedAsValues": "error",
     "forceConsistentCasingInFileNames": true,
     "jsx": "react",
     "lib": ["esnext", "dom"],
@@ -25,5 +27,6 @@
     "strict": true,
     "target": "esnext"
   },
-  "extends": "expo/tsconfig.base"
+  "exclude": ["lib", "node_modules", "storybookDocsComponents"],
+  "include": ["src"]
 }
