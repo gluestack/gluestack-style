@@ -23,22 +23,30 @@ export const Wrapper = () => {
 
   return (
     <StyledProvider config={config} colorMode={currectColorMode}>
-      <Pressable
+      <View
         style={{
-          backgroundColor: 'gray',
-          padding: 12,
-          marginBottom: 12,
-        }}
-        onPress={() => {
-          // set(get() === 'dark' ? 'light' : 'dark');
-          setCurrentColorMode(currectColorMode === 'dark' ? 'light' : 'dark');
+          flex: 1,
+          justifyContent: 'center',
+          alignItems: 'center',
         }}
       >
-        <Text style={{ color: 'white' }}>
-          Toggle {currectColorMode === 'dark' ? 'light' : 'dark'}
-        </Text>
-      </Pressable>
-      <StyledColorMode />
+        <Pressable
+          style={{
+            backgroundColor: 'gray',
+            padding: 12,
+            marginBottom: 12,
+          }}
+          onPress={() => {
+            // set(get() === 'dark' ? 'light' : 'dark');
+            setCurrentColorMode(currectColorMode === 'dark' ? 'light' : 'dark');
+          }}
+        >
+          <Text style={{ color: 'white' }}>
+            Toggle {currectColorMode === 'dark' ? 'light' : 'dark'}
+          </Text>
+        </Pressable>
+        <StyledColorMode />
+      </View>
     </StyledProvider>
   );
 };

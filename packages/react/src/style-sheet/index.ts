@@ -1,4 +1,4 @@
-import { StyledValueToCSSObject } from '../resolver';
+import { StyledValueToCSSObject } from '../resolver/StyledValueToCSSObject';
 import type { OrderedSXResolved } from '../types';
 import { getCSSIdAndRuleset } from '../updateCSSStyleInOrderedResolved.web';
 import { deepMerge, resolveTokensFromConfig } from '../utils';
