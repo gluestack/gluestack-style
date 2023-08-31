@@ -530,7 +530,7 @@ export type StyleIds = {
 };
 
 /********************* CONFIG FROM DECLARE MODULE *****************************************/
-
+// @ts-ignore
 export interface ICustomConfig {}
 
 export interface GSConfig
@@ -602,15 +602,18 @@ export type RemoveNever<T> = {
 // Mapping tokens with scale value of alaises
 export type AliasesProps<GenericComponentStyles = Aliases> = RemoveNever<{
   [key in keyof Aliases]?: Aliases[key] extends keyof GenericComponentStyles
-    ? PropertyTokenType[Aliases[key]] extends 'sizes'
+    ? //@ts-ignore
+      PropertyTokenType[Aliases[key]] extends 'sizes'
       ?
           | StringifyToken<
+              // @ts-ignore
               keyof GSConfig['tokens'][PropertyTokenType[Aliases[key]]]
             >
           | StringifyToken<keyof GSConfig['tokens']['space']>
           | ExtendRNStyle<GenericComponentStyles, Aliases[key]>
       :
           | StringifyToken<
+              // @ts-ignore
               keyof GSConfig['tokens'][PropertyTokenType[Aliases[key]]]
             >
           | ExtendRNStyle<GenericComponentStyles, Aliases[key]>
@@ -679,6 +682,7 @@ export type TokenizedRNStyleProps<GenericComponentStyles> = {
     ? PropertyTokenType[key] extends 'sizes'
       ?
           | StringifyToken<keyof GSConfig['tokens']['space']>
+          //@ts-ignore
           | StringifyToken<keyof GSConfig['tokens'][PropertyTokenType[key]]>
           | ExtendRNStyle<GenericComponentStyles, key>
       : //@ts-ignore

@@ -50,7 +50,6 @@
 //   },
 //   {
 //     ancestorStyle: ['_icon'],
-//     DEBUG: 'STYLED_ICON',
 //     resolveProps: ['stroke'],
 //   },
 //   {

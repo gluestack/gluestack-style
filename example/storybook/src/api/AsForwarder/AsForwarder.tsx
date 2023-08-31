@@ -81,7 +81,6 @@ export const StyledView = styled(
   {
     ancestorStyle: ['_icon'],
     descendantStyle: ['_text'],
-    DEBUG: 'STYLED_ICON',
   },
   {}
 );

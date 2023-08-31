@@ -30,14 +30,12 @@ const StyledLinkButton = styled(
       variant: 'redbox',
     },
   },
-  {
-    DEBUG: 'Button',
-  }
+  {}
 );
 const Box = styled(View, {});
 const Text = styled(RNText, { color: '$textColor' });
 
-export function Themes({ ...args }) {
+export function Themes({}: any) {
   const [theme, setTheme] = React.useState('2000s');
   const themes = ['2000s', '2010s', '2020s'];
   return (

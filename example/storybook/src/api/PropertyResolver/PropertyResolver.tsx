@@ -28,9 +28,12 @@ const StyledPropertyResolver = styled(
     propertyTokenMap: {
       colors: 'colors',
     },
+    // @ts-ignore
     propertyResolver: {
       props: {
+        // @ts-ignore
         colors: (value: any, resolver: any) => {
+          // @ts-ignore
           return value.map((color: any) => resolver(color));
         },
       },

@@ -47,7 +47,6 @@ const StyledText = styled(
   {},
   {
     ancestorStyle: ['_text'],
-    DEBUG: 'TEXT',
   }
 );
 

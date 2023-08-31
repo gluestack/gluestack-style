@@ -112,7 +112,6 @@ export const StyledIcon = styled(
 
   {
     ancestorStyle: ['_icon'],
-    DEBUG: 'STYLED_ICON',
   },
   {}
 );

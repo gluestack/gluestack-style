@@ -62,9 +62,7 @@ const StyledButton = styled(
       variant: 'redbox',
     },
   },
-  {
-    DEBUG: 'Button',
-  }
+  {}
 );
 
 export function BaseStyleVariantSizes({ ...args }) {
@@ -83,7 +81,10 @@ export function BaseStyleVariantSizes({ ...args }) {
         <StyledButton
           mb="$1.5"
           mt={'-$2.5'}
-          sx={{ boxShadow: '1px 1px $space$3 $colors$primary400' }}
+          sx={{
+            //@ts-ignore
+            boxShadow: '1px 1px $space$3 $colors$primary400',
+          }}
         >
           <Text>bluebox - md</Text>
         </StyledButton>

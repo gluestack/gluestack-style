@@ -137,31 +137,31 @@ export function ContextBasedStylesContent() {
   //   console.log(Date.now() - timeTaken.current, 'hello');
   // }, [state]);
   return <Text>hello</Text>;
-  return (
-    <>
-      <RNPressable
-        onPress={handlePress}
-        style={{
-          height: 50,
-          width: 200,
-          backgroundColor: 'red',
-          position: 'absolute',
-          top: 0,
-          left: 0,
-        }}
-      >
-        <Text style={{ color: 'black' }}>Mount</Text>
-      </RNPressable>
-      {/* <MyPressable>
-        <RNText>Hello</RNText>
-      </MyPressable> */}
-      {/* {state && <MyList />
-      } */}
-      <Box pointerEvents="none" style={{ display: state ? 'flex' : 'none' }}>
-        <MyList />
-      </Box>
-    </>
-  );
+  // return (
+  //   <>
+  //     <RNPressable
+  //       onPress={handlePress}
+  //       style={{
+  //         height: 50,
+  //         width: 200,
+  //         backgroundColor: 'red',
+  //         position: 'absolute',
+  //         top: 0,
+  //         left: 0,
+  //       }}
+  //     >
+  //       <Text style={{ color: 'black' }}>Mount</Text>
+  //     </RNPressable>
+  //     {/* <MyPressable>
+  //       <RNText>Hello</RNText>
+  //     </MyPressable> */}
+  //     {/* {state && <MyList />
+  //     } */}
+  //     <Box pointerEvents="none" style={{ display: state ? 'flex' : 'none' }}>
+  //       <MyList />
+  //     </Box>
+  //   </>
+  // );
 }
 
 const MyList = React.memo(() => {

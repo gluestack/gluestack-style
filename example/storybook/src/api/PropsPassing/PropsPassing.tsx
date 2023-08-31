@@ -21,6 +21,7 @@ const StyledMotionView = styledAnimated(
       scale: 1,
     },
     ':hover': {
+      //@ts-ignore
       ':animate': {
         opacity: 1,
       },
@@ -30,6 +31,7 @@ const StyledMotionView = styledAnimated(
         scale: 1,
       },
       ':hover': {
+        //@ts-ignore
         ':animate': {
           scale: 1.01,
         },
@@ -123,7 +125,6 @@ const StyledView = styled(
   {
     ancestorStyle: ['_icon'],
     // resolveProps: ['size'],
-    DEBUG: 'STYLED_ICON',
   },
   {
     // alias: {
@@ -165,9 +166,11 @@ export function PropsPassing() {
 
   useEffect(() => {
     if (ref && ref.current) {
+      // @ts-ignore
       ref.current.addEventListener('mouseover', () => {
         setHover(true);
       });
+      // @ts-ignore
       ref.current.addEventListener('mouseout', () => {
         setHover(false);
       });

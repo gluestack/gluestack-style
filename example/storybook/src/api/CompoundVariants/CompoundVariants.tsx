@@ -71,7 +71,6 @@ const StyledView = styled(
     ancestorStyle: ['_icon'],
     componentName: 'Box',
     // resolveProps: ['size'],
-    DEBUG: 'STYLED_ICON',
   },
   {
     // alias: {
@@ -113,9 +112,11 @@ export function CompoundVariants() {
 
   useEffect(() => {
     if (ref && ref.current) {
+      // @ts-ignore
       ref.current.addEventListener('mouseover', () => {
         setHover(true);
       });
+      // @ts-ignore
       ref.current.addEventListener('mouseout', () => {
         setHover(false);
       });
