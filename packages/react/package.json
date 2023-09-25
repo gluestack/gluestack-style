@@ -27,6 +27,7 @@
   "react-native": "src/index",
   "source": "src/index",
   "typings": "lib/typescript/index.d.ts",
+  "sideEffects": false,
   "scripts": {
     "prepare": "bob build",
     "release": "release-it",
