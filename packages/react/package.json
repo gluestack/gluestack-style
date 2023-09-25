@@ -45,7 +45,8 @@
     "react-native": "^0.70.3",
     "react-native-builder-bob": "^0.20.1",
     "react-native-web": "^0.18.1",
-    "tsconfig": "*"
+    "tsconfig": "*",
+    "webpack-bundle-analyzer": "^4.9.1"
   },
   "dependencies": {
     "inline-style-prefixer": "^6.0.1",
