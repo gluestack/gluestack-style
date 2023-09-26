@@ -18,12 +18,12 @@ function getLastValidObject(mediaQueries: any) {
   return null; // No valid object found
 }
 
-export function useBreakpointValue(values: BreakPointValue) {
-  let { width } = useWindowDimensions();
+export function useBreakpointValue({ ...values }: BreakPointValue) {
+  const { width } = useWindowDimensions();
   const theme = useStyled();
   const mediaQueries = theme?.config?.tokens?.mediaQueries;
 
-  let mediaQueriesBreakpoints: any = [];
+  const mediaQueriesBreakpoints: any = [];
 
   Object.keys(mediaQueries).forEach((key: any) => {
     const currentBreakpoint: any = extractWidthValues(mediaQueries[key]);
