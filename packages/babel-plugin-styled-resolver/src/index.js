@@ -7,6 +7,8 @@ const traverse = require('@babel/traverse').default;
 const types = require('@babel/types');
 const rollupTypescriptPlugin = require('@rollup/plugin-typescript');
 const rollup = require('rollup');
+const resolve = require('@rollup/plugin-node-resolve');
+
 const {
   convertStyledToStyledVerbosed,
   convertSxToSxVerbosed,
@@ -585,19 +587,95 @@ async function buildAndRun(rollupConfig) {
   await bundle.write(rollupConfig.output);
 }
 
+// const rollupConfig = {
+//   input: getConfigPath(),
+//   output: {
+//     file: './output.js', // The bundled JavaScript file
+//     format: 'cjs', // CommonJS format for Node.js
+//   },
+//   plugins: [
+//     rollupTypescriptPlugin({ tsconfig: false }),
+//     //   {
+//     //   extensions: ['.js', '.jsx', '.ts', '.tsx'],
+//     //   exclude: 'node_modules/**',
+//     //   // babelHelpers: 'runtime',
+//     // }
+//   ],
+// };
+
+const globals = `const react = {
+  forwardRef: () => {},
+  createElement: () => {},
+};
+const reactNative = {
+  Platform: {
+    select: () => {},
+  },
+  StyleSheet: {
+    create: () => {},
+  },
+  PixelRatio: {
+    getFontScale: () => {},
+  },
+};
+const gluestackStyleReact = {
+  createConfig: (config) => {
+    return config;
+  },
+  createStyle: (config) => {
+    return config;
+  },
+  createComponents: (config) => {
+    return config;
+  },
+};
+const gluestackStyleAnimationResolver = {
+  AnimationResolver: class {
+    constructor() {}
+  },
+};
+const gluestackStyleLegendMotionAnimationDriver = {
+};
+const gluestackStyleMotiAnimationDriver = {
+};
+`;
+
 const rollupConfig = {
   input: getConfigPath(),
   output: {
     file: './output.js', // The bundled JavaScript file
-    format: 'cjs', // CommonJS format for Node.js
+    format: 'iife', // iife format for Node.js
+    globals: {
+      'react': 'react',
+      'react-native': 'reactNative',
+      '@gluestack-style/react': 'gluestackStyleReact',
+      '@gluestack-style/animation-resolver': 'gluestackStyleAnimationResolver',
+      '@gluestack-style/legend-motion-animation-driver':
+        'gluestackStyleLegendMotionAnimationDriver',
+      '@gluestack-style/moti-animation-driver':
+        'gluestackStyleMotiAnimationDriver',
+    },
+    name: 'config',
+    banner: globals,
+    footer: 'module.exports = config;',
   },
   plugins: [
-    rollupTypescriptPlugin(),
-    //   {
-    //   extensions: ['.js', '.jsx', '.ts', '.tsx'],
-    //   exclude: 'node_modules/**',
-    //   // babelHelpers: 'runtime',
-    // }
+    resolve({
+      extensions: ['.js', '.ts', '.tsx', '.jsx', '.json'], // Add your custom file extensions here
+    }),
+    rollupTypescriptPlugin({
+      compilerOptions: { lib: ['es5', 'es6', 'dom'], target: 'es5' },
+      tsconfig: false,
+      // typescript: require('some-fork-of-typescript'),
+    }),
+  ],
+  external: [
+    'react',
+    'react-native',
+    '@gluestack-style/react',
+    '@gluestack-style/animation-resolver',
+    '@gluestack-style/legend-motion-animation-driver',
+    '@gluestack-style/moti-animation-driver',
   ],
 };
 
@@ -606,10 +684,11 @@ buildAndRun(rollupConfig)
     console.log('config bundled successfully');
   })
   .catch((error) => {
-    console.error('Weeeeerrrrrrronn>>>>>>', rollupConfig, error);
+    fs.writeFileSync('./output.js', '');
+    console.error(error);
   });
 
-const CONFIG = {};
+const CONFIG = require(path.join(process.cwd(), 'output.js'));
 let ConfigDefault = CONFIG;
 // console.log('Configgggg>>>.>>', CONFIG, rollupConfig);
 
@@ -674,9 +753,40 @@ module.exports = function (b) {
           input: getConfigPath(configPath),
           output: {
             file: './output.js', // The bundled JavaScript file
-            format: 'cjs', // CommonJS format for Node.js
+            format: 'iife', // iife format for Node.js
+            globals: {
+              'react': 'react',
+              'react-native': 'reactNative',
+              '@gluestack-style/react': 'gluestackStyleReact',
+              '@gluestack-style/animation-resolver':
+                'gluestackStyleAnimationResolver',
+              '@gluestack-style/legend-motion-animation-driver':
+                'gluestackStyleLegendMotionAnimationDriver',
+              '@gluestack-style/moti-animation-driver':
+                'gluestackStyleMotiAnimationDriver',
+            },
+            name: 'config',
+            banner: globals,
+            footer: 'module.exports = config;',
           },
-          plugins: [rollupTypescriptPlugin()],
+          plugins: [
+            resolve({
+              extensions: ['.js', '.ts', '.tsx', '.jsx', '.json'], // Add your custom file extensions here
+            }),
+            rollupTypescriptPlugin({
+              compilerOptions: { lib: ['es5', 'es6', 'dom'], target: 'es5' },
+              tsconfig: false,
+              // typescript: require('some-fork-of-typescript'),
+            }),
+          ],
+          external: [
+            'react',
+            'react-native',
+            '@gluestack-style/react',
+            '@gluestack-style/animation-resolver',
+            '@gluestack-style/legend-motion-animation-driver',
+            '@gluestack-style/moti-animation-driver',
+          ],
         };
 
         if (configPath) {
@@ -685,11 +795,10 @@ module.exports = function (b) {
               console.log('config bundled successfully');
             })
             .catch((error) => {
-              console.error('EEEERRRR>>>>>>', error);
+              console.error(error);
             });
-          ConfigDefault = require('./output.js');
+          ConfigDefault = require(path.join(process.cwd(), 'output.js'));
         }
-
         configThemePath.forEach((path) => {
           ConfigDefault = ConfigDefault?.[path];
         });

@@ -52,13 +52,13 @@ module.exports = function (api) {
       [
         myBabel,
         // {
-        // configPath: path.join(__dirname, './gluestack-ui.config.ts'),
-        // configThemePath: ['theme'],
-        // styled: [
-        //   '@gluestack-style/react',
-        //   path.join(__dirname, '../../packages/react/src'),
-        // ],
-        // components: ['@gluesatck-ui/themed'],
+        //   configPath: path.join(__dirname, './gluestack-ui.config.ts'),
+        //   configThemePath: ['theme'],
+        //   styled: [
+        //     '@gluestack-style/react',
+        //     path.join(__dirname, '../../packages/react/src'),
+        //   ],
+        //   components: ['@gluesatck-ui/themed'],
         // },
       ],
     ],
