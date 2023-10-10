@@ -5,19 +5,8 @@ module.exports = function (api) {
   api.cache(true);
   return {
     presets: ['babel-preset-expo'],
+    // modules: false,
     plugins: [
-      // [
-      //   myBabel,
-      //   {
-      //     configPath: path.join(__dirname, './gluestack-ui.config.ts'),
-      //     configThemePath: ['theme'],
-      //     styled: [
-      //       '@gluestack-style/react',
-      //       path.join(__dirname, '../../packages/react/src'),
-      //     ],
-      //     components: ['@gluesatck-ui/themed'],
-      //   },
-      // ],
       [
         'module-resolver',
         {
@@ -57,6 +46,20 @@ module.exports = function (api) {
             // ),
           },
         },
+      ],
+      // '@babel/plugin-transform-runtime',
+      // '@babel/plugin-transform-modules-commonjs',
+      [
+        myBabel,
+        // {
+        // configPath: path.join(__dirname, './gluestack-ui.config.ts'),
+        // configThemePath: ['theme'],
+        // styled: [
+        //   '@gluestack-style/react',
+        //   path.join(__dirname, '../../packages/react/src'),
+        // ],
+        // components: ['@gluesatck-ui/themed'],
+        // },
       ],
     ],
   };

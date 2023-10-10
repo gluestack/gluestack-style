@@ -3,7 +3,9 @@
   "compilerOptions": {
     "baseUrl": ".",
     "paths": {
-      "@gluestack-style/react": ["../react/src/index"]
+      "@gluestack-style/react": [
+        "../react/src/index"
+      ]
     },
     "emitDeclarationOnly": true,
     "noEmit": false,
@@ -14,7 +16,10 @@
     "importsNotUsedAsValues": "error",
     "forceConsistentCasingInFileNames": true,
     "jsx": "react",
-    "lib": ["esnext", "dom"],
+    "lib": [
+      "esnext",
+      "dom"
+    ],
     "module": "esnext",
     "moduleResolution": "node",
     "noFallthroughCasesInSwitch": true,
@@ -28,6 +33,11 @@
     "strict": true,
     "target": "esnext"
   },
-  "include": ["src"],
-  "exclude": ["lib", "node_modules"]
+  "include": [
+    "src"
+  ],
+  "exclude": [
+    "lib",
+    "node_modules"
+  ]
 }

@@ -5,7 +5,8 @@ const generate = require('@babel/generator').default;
 const babelPresetTypeScript = require('@babel/preset-typescript');
 const traverse = require('@babel/traverse').default;
 const types = require('@babel/types');
-
+const rollupTypescriptPlugin = require('@rollup/plugin-typescript');
+const rollup = require('rollup');
 const {
   convertStyledToStyledVerbosed,
   convertSxToSxVerbosed,
@@ -189,6 +190,39 @@ const { exit } = require('process');
 const checkIfPathIsAbsolute = (path) => {
   return path.startsWith('/');
 };
+
+function getConfigPath(configPath) {
+  if (configPath) {
+    return configPath;
+  }
+
+  const isConfigJSExist = fs.existsSync(
+    path.join(process.cwd(), './gluestack-style.config.js')
+  );
+  const isGlueStackUIConfigJSExist = fs.existsSync(
+    path.join(process.cwd(), './gluestack-ui.config.js')
+  );
+  const isConfigTSExist = fs.existsSync(
+    path.join(process.cwd(), './gluestack-style.config.ts')
+  );
+  const isGlueStackUIConfigTSExist = fs.existsSync(
+    path.join(process.cwd(), './gluestack-ui.config.ts')
+  );
+  if (isConfigTSExist) {
+    return './gluestack-style.config.ts';
+  }
+
+  if (isConfigJSExist) {
+    return './gluestack-style.config.js';
+  }
+  if (isGlueStackUIConfigJSExist) {
+    return './gluestack-ui.config.js';
+  }
+  if (isGlueStackUIConfigTSExist) {
+    return './gluestack-ui.config.ts';
+  }
+}
+
 function getConfig(configPath) {
   if (configPath) {
     return fs.readFileSync(
@@ -545,9 +579,39 @@ function isImportFromAbsolutePath(
   return false;
 }
 
-const CONFIG = getExportedConfigFromFileString(getConfig());
+async function buildAndRun(rollupConfig) {
+  const bundle = await rollup.rollup(rollupConfig);
+  console.log(bundle);
+  await bundle.write(rollupConfig.output);
+}
 
+const rollupConfig = {
+  input: getConfigPath(),
+  output: {
+    file: './output.js', // The bundled JavaScript file
+    format: 'cjs', // CommonJS format for Node.js
+  },
+  plugins: [
+    rollupTypescriptPlugin(),
+    //   {
+    //   extensions: ['.js', '.jsx', '.ts', '.tsx'],
+    //   exclude: 'node_modules/**',
+    //   // babelHelpers: 'runtime',
+    // }
+  ],
+};
+
+buildAndRun(rollupConfig)
+  .then(() => {
+    console.log('config bundled successfully');
+  })
+  .catch((error) => {
+    console.error('Weeeeerrrrrrronn>>>>>>', rollupConfig, error);
+  });
+
+const CONFIG = {};
 let ConfigDefault = CONFIG;
+// console.log('Configgggg>>>.>>', CONFIG, rollupConfig);
 
 module.exports = function (b) {
   const { types: t } = b;
@@ -606,10 +670,24 @@ module.exports = function (b) {
           platform = 'all';
         }
 
+        const rollupConfig = {
+          input: getConfigPath(configPath),
+          output: {
+            file: './output.js', // The bundled JavaScript file
+            format: 'cjs', // CommonJS format for Node.js
+          },
+          plugins: [rollupTypescriptPlugin()],
+        };
+
         if (configPath) {
-          ConfigDefault = getExportedConfigFromFileString(
-            getConfig(configPath)
-          );
+          buildAndRun(rollupConfig)
+            .then(() => {
+              console.log('config bundled successfully');
+            })
+            .catch((error) => {
+              console.error('EEEERRRR>>>>>>', error);
+            });
+          ConfigDefault = require('./output.js');
         }
 
         configThemePath.forEach((path) => {
