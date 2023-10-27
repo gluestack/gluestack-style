@@ -1,101 +1,138 @@
-/* eslint-disable react-native/no-inline-styles */
-import React from 'react';
-import {
-  SafeAreaView,
-  StyleSheet,
-  // View,
-  //  View
-} from 'react-native';
-import { GluestackUIProvider } from './gluestack-ui-components';
+import React, { useContext, useRef } from 'react';
+import { Pressable, StyleSheet, View, Text } from 'react-native';
 import { config } from './gluestack-ui.config';
-import { SSRProvider } from '@react-native-aria/utils';
-import { useFonts } from 'expo-font';
-import {
-  Inter_400Regular,
-  Inter_500Medium,
-  Inter_600SemiBold,
-  Inter_700Bold,
-  Inter_900Black,
-} from '@expo-google-fonts/inter';
 import './styles';
-// import { styled } from '@gluestack-style/react';
-import HomestayPage from './kitchensink-components/HomestayPage';
+import { styled } from '@gluestack-style/react';
+import { StyledProvider } from '@gluestack-style/react';
+import { ProfilerComponent } from './Profiler';
 
-// const Box = styled(View, {
-//   bg: '$primary100',
-//   h: '$10',
-//   w: '$10',
-// });
+const COUNT = 1;
 
-type ThemeContextType = {
-  colorMode?: 'dark' | 'light';
-  toggleColorMode?: () => void;
-};
-
-export const ThemeContext = React.createContext<ThemeContextType>({
-  colorMode: 'light',
-  toggleColorMode: () => {},
+const Box = styled(View, {
+  bg: '$red500',
+  p: '$20',
 });
 
-export default function App() {
-  const [colorMode, setColorMode] = React.useState<'dark' | 'light'>('light');
+const RNWContext = React.createContext({
+  hello: 'world',
+});
 
-  const [fontsLoaded] = useFonts({
-    Inter_400Regular,
-    Inter_500Medium,
-    Inter_600SemiBold,
-    Inter_700Bold,
-    Inter_900Black,
+const myStyled = (Component: any) => {
+  const StyledComp = React.forwardRef((props: any, ref: any) => {
+    const ctx = useContext(RNWContext);
+    const ref1 = useRef(null);
+    const ref17 = useRef(null);
+    const ref15 = useRef(null);
+    const ref13 = useRef(null);
+    const ref2 = useRef(null);
+    const ref3 = useRef(null);
+
+    // console.log(ctx, ref1, ref17, ref15, ref13, ref2, ref3);
+    // console.log(ctx);
+
+    React.useEffect(() => {
+      // console.log('hellooooo 1');
+    }, []);
+
+    React.useEffect(() => {
+      // console.log('hellooooo 2');
+    }, []);
+    React.useEffect(() => {
+      // console.log('hellooooo 2');
+    }, []);
+    return <Component {...props} ref={ref} />;
   });
 
-  if (!fontsLoaded) {
-    return null;
-  }
+  StyledComp.displayName = 'MYStyledComp';
+  return StyledComp;
+};
 
-  const toggleColorMode = async () => {
-    // colorMode === 'light' ? setColorMode('dark') : setColorMode('light');
-    setColorMode((prev) => (prev === 'light' ? 'dark' : 'light'));
-  };
+const RNWView = myStyled(View);
 
+const GSBox = () => {
+  const [show, setShow] = React.useState(false);
   return (
     <>
-      {/* top SafeAreaView */}
-      <SafeAreaView
-        style={{
-          backgroundColor: colorMode === 'light' ? '#E5E5E5' : '#262626',
-        }}
-      />
-      {/* bottom SafeAreaView */}
-      <SafeAreaView
-        style={{
-          ...styles.container,
-          backgroundColor: colorMode === 'light' ? 'white' : '#171717',
-        }}
-      >
-        {/* gluestack-ui provider */}
-        <SSRProvider>
-          <GluestackUIProvider config={config.theme} colorMode={colorMode}>
-            <ThemeContext.Provider value={{ colorMode, toggleColorMode }}>
-              {/* <Theme name="x">
-              <Box bg="$amber800"></Box>
-            </Theme> */}
-              {/* <Box bg="$red500"></Box> */}
-              {/* <Box bg="$amber50"></Box>
-            <Box></Box> */}
-              {/* <BaseButton>Hello Worlddddd</BaseButton>
-              <ComposedButton>Hello</ComposedButton> */}
-              <HomestayPage />
-            </ThemeContext.Provider>
-          </GluestackUIProvider>
-        </SSRProvider>
-      </SafeAreaView>
+      <Pressable onPress={() => setShow(!show)} style={styles.button}>
+        <Text>gluestack-style</Text>
+      </Pressable>
+      {show && (
+        <ProfilerComponent index={0} testInfo="GS">
+          {new Array(COUNT).fill(0).map((_, index) => (
+            <Box />
+          ))}
+        </ProfilerComponent>
+      )}
     </>
+  );
+};
+const RNWrapperBox = () => {
+  const [show, setShow] = React.useState(false);
+  return (
+    <>
+      <Pressable onPress={() => setShow(!show)} style={styles.button}>
+        <Text>RNW Wrapper</Text>
+      </Pressable>
+      {show && (
+        <ProfilerComponent index={2} testInfo="RNW Wrapper">
+          {new Array(COUNT).fill(0).map((_, index) => (
+            <RNWView key={index} style={styles.box} />
+          ))}
+        </ProfilerComponent>
+      )}
+    </>
+  );
+};
+const RNWBox = () => {
+  const [show, setShow] = React.useState(false);
+  return (
+    <>
+      <Pressable onPress={() => setShow(!show)} style={styles.button}>
+        <Text>RNW</Text>
+      </Pressable>
+      {show && (
+        <ProfilerComponent index={1} testInfo="RNW">
+          {new Array(COUNT).fill(0).map((_, index) => (
+            <View key={index} style={styles.box} />
+          ))}
+        </ProfilerComponent>
+      )}
+    </>
+  );
+};
+
+export default function App() {
+  return (
+    <StyledProvider config={config.theme} colorMode={'dark'}>
+      <View style={styles.container}>
+        <GSBox />
+        <RNWrapperBox />
+        <RNWBox />
+        <Pressable
+          onPress={() => {
+            console.getPerformanceMap();
+          }}
+          style={styles.button}
+        >
+          <Text>Get performance</Text>
+        </Pressable>
+      </View>
+    </StyledProvider>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    overflow: 'hidden',
+  },
+  box: {
+    backgroundColor: 'yellow',
+    padding: 80,
+  },
+  button: {
+    height: 40,
+    width: 160,
+    backgroundColor: 'blue',
+    margin: 8,
   },
 });

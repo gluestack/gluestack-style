@@ -6,18 +6,18 @@ module.exports = function (api) {
   return {
     presets: ['babel-preset-expo'],
     plugins: [
-      // [
-      //   myBabel,
-      //   {
-      //     configPath: path.join(__dirname, './gluestack-ui.config.ts'),
-      //     configThemePath: ['theme'],
-      //     styled: [
-      //       '@gluestack-style/react',
-      //       path.join(__dirname, '../../packages/react/src'),
-      //     ],
-      //     components: ['@gluesatck-ui/themed'],
-      //   },
-      // ],
+      [
+        myBabel,
+        {
+          configPath: path.join(__dirname, './gluestack-ui.config.ts'),
+          configThemePath: ['theme'],
+          styled: [
+            '@gluestack-style/react',
+            path.join(__dirname, '../../packages/react/src'),
+          ],
+          components: ['@gluesatck-ui/themed'],
+        },
+      ],
       [
         'module-resolver',
         {

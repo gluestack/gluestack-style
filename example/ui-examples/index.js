@@ -1,4 +1,5 @@
 console.timeMap = { boot: {}, runtime: {} };
+console.performanceMap = {};
 console.initKey = (key: string, runningTime: string) => {
   console.timeMap[runningTime][key] = {
     'startTime': 0,
@@ -34,6 +35,29 @@ console.getPerformanceReport = () => {
   // console.table(console.timeMap.boot);
   console.log('console.timeMap.runtime');
   console.table(console.timeMap.runtime);
+};
+
+console.setKey = (key, time) => {
+  if (console.performanceMap[key]) {
+    console.performanceMap[key].push(time);
+  } else {
+    console.performanceMap[key] = [time];
+  }
+};
+
+console.getPerformanceMap = () => {
+  const performanceMap = console.performanceMap;
+
+  Object.keys(performanceMap).map((library, index) => {
+    performanceMap[library]['average'] = parseFloat(
+      (
+        performanceMap[library].reduce((prev, acc) => prev + acc, 0) /
+        performanceMap[library].length
+      ).toFixed(2)
+    );
+  });
+
+  console.table(performanceMap);
 };
 
 import { registerRootComponent } from 'expo';
