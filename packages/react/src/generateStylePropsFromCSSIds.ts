@@ -180,11 +180,20 @@ export function generateStylePropsFromCSSIds(
     'data-style': getDataStyle(props, styleCSSIdsString),
   });
 
+  let updatedComponentConfig = componentConfig;
+
+  if (props?.dataSet?.componentConfig) {
+    updatedComponentConfig = {
+      ...updatedComponentConfig,
+      ...JSON.parse(props?.dataSet?.componentConfig),
+    };
+  }
+
   if (Platform.OS === 'web') {
     Object.assign(props, {
       dataSet: {
         ...props?.dataSet,
-        componentConfig: JSON.stringify(componentConfig),
+        componentConfig: JSON.stringify(updatedComponentConfig),
       },
     });
   }
