@@ -59,7 +59,7 @@ const GSBox = () => {
       {show && (
         <ProfilerComponent index={0} testInfo="GS">
           {new Array(COUNT).fill(0).map((_, index) => (
-            <Box />
+            <Box key={index} />
           ))}
         </ProfilerComponent>
       )}
