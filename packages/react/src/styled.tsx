@@ -994,7 +994,6 @@ export function verboseStyled<P, Variants, ComCon>(
 
   const StyledComponent = (
     {
-      children,
       //@ts-ignore
       orderedResolved: BUILD_TIME_ORDERED_RESOLVED = [],
       //@ts-ignore
@@ -1009,7 +1008,6 @@ export function verboseStyled<P, Variants, ComCon>(
         Partial<ComponentProps<ITypeReactNativeStyles, Variants, P, ComCon>> &
         Partial<UtilityProps<ITypeReactNativeStyles, Variants, P>> & {
           as?: any;
-          children?: any;
         },
       'animationComponentGluestack'
     >,
@@ -1072,6 +1070,8 @@ export function verboseStyled<P, Variants, ComCon>(
 
       // middleware logic
 
+      let componentExtendedTheme = {};
+
       // Injecting style
       if (EXTENDED_THEME) {
         // RUN Middlewares
@@ -1083,11 +1083,10 @@ export function verboseStyled<P, Variants, ComCon>(
           EXTENDED_THEME
         );
 
+        componentExtendedTheme = resolvedComponentExtendedTheme.theme;
+
         // const resolvedComponentExtendedTheme = EXTENDED_THEME;
 
-        theme = deepMerge(theme, resolvedComponentExtendedTheme.theme);
-        // @ts-ignore
-        Object.assign(themeDefaultProps, theme?.baseStyle?.props);
         if (Object.keys(EXTENDED_THEME?.BUILD_TIME_PARAMS ?? {}).length > 0) {
           const EXTENDED_THEME_BUILD_TIME_PARAMS =
             EXTENDED_THEME?.BUILD_TIME_PARAMS;
@@ -1182,6 +1181,10 @@ export function verboseStyled<P, Variants, ComCon>(
           );
         }
       }
+
+      theme = deepMerge(theme, componentExtendedTheme);
+      // @ts-ignore
+      Object.assign(themeDefaultProps, theme?.baseStyle?.props);
 
       Object.assign(styledSystemProps, CONFIG?.aliases);
 
@@ -1974,6 +1977,7 @@ export function verboseStyled<P, Variants, ComCon>(
     delete resolvedStyleProps?.as;
 
     const ComponentWithPlugin = React.useMemo(() => {
+      let MyComponent = Component;
       if (plugins) {
         for (const pluginName in plugins) {
           // @ts-ignore
@@ -1982,8 +1986,8 @@ export function verboseStyled<P, Variants, ComCon>(
             !resolvedStyleProps.disableMiddleware
           ) {
             // @ts-ignore
-            Component = plugins[pluginName]?.componentMiddleWare({
-              Component: AsComp ?? Component,
+            MyComponent = plugins[pluginName]?.componentMiddleWare({
+              Component: AsComp ?? MyComponent,
               theme,
               componentStyleConfig,
               ExtendedConfig,
@@ -1994,7 +1998,7 @@ export function verboseStyled<P, Variants, ComCon>(
           }
         }
       }
-      return Component;
+      return MyComponent;
     }, []);
     let component;
 
@@ -2023,15 +2027,11 @@ export function verboseStyled<P, Variants, ComCon>(
             style={resolvedStyleMemo}
             as={AsComp}
             ref={ref}
-          >
-            {children}
-          </ComponentWithPlugin>
+          />
         );
       } else {
         component = (
-          <AsComp {...resolvedStyleProps} style={resolvedStyleMemo} ref={ref}>
-            {children}
-          </AsComp>
+          <AsComp {...resolvedStyleProps} style={resolvedStyleMemo} ref={ref} />
         );
       }
     } else {
@@ -2044,18 +2044,14 @@ export function verboseStyled<P, Variants, ComCon>(
           states={states}
           style={resolvedStyleMemo}
           ref={ref}
-        >
-          {children}
-        </ComponentWithPlugin>
+        />
       ) : (
         <ComponentWithPlugin
           {...resolvedStyleProps}
           {...propsToBePassedInToPlugin}
           style={resolvedStyleMemo}
           ref={ref}
-        >
-          {children}
-        </ComponentWithPlugin>
+        />
       );
     }
     if (containsDescendant) {

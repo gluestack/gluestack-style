@@ -1,5 +1,21 @@
 # @gluestack-style/react
 
+## 1.0.18
+
+### Patch Changes
+
+- Fixed style injection order incase of composed styled component [PR](https://github.com/gluestack/gluestack-style/pull/544)
+
+## 1.0.17
+
+### Patch Changes
+
+### Fixes
+
+- Fixed children typings [PR](https://github.com/gluestack/gluestack-style/pull/538)
+- Fixed react-native style typings [PR](https://github.com/gluestack/gluestack-style/pull/539)
+- Fixed config warning [PR](https://github.com/gluestack/gluestack-style/pull/540)
+
 ## 1.0.16
 
 ### Patch Changes
