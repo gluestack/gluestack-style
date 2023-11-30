@@ -1,7 +1,11 @@
 import { AnimationResolver } from '@gluestack-style/animation-resolver';
 import { MotionAnimationDriver } from '@gluestack-style/legend-motion-animation-driver';
 // import { MotiAnimationDriver } from '@gluestack-style/moti-animation-driver';
-import { createComponents, createConfig } from '@gluestack-style/react';
+import {
+  FontResolver,
+  createComponents,
+  createConfig,
+} from '@gluestack-style/react';
 
 export const config = createConfig({
   aliases: {
@@ -621,9 +625,9 @@ export const config = createConfig({
       extraBlack: '950',
     },
     fonts: {
-      heading: undefined,
-      body: undefined,
-      mono: undefined,
+      heading: 'outfit',
+      body: 'outfit',
+      mono: 'mono',
     },
     fontSizes: {
       '2xs': 10,
@@ -720,7 +724,7 @@ export const config = createConfig({
       // },
     },
   },
-  plugins: [new AnimationResolver(MotionAnimationDriver)],
+  plugins: [new AnimationResolver(MotionAnimationDriver), new FontResolver()],
   components: {
     Box: {
       theme: {

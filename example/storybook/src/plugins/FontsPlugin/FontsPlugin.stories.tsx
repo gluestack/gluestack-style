@@ -6,5 +6,5 @@ const MyFontsPluginMeta: ComponentMeta<typeof FontsPlugin> = {
 };
 
 export { FontsPlugin } from './FontsPlugin';
-export { CustomFontMapper } from './CustomFontMapper';
+// export { CustomFontMapper } from './CustomFontMapper';
 export default MyFontsPluginMeta;

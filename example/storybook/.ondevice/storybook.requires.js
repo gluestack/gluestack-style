@@ -66,9 +66,9 @@ const getStories = () => {
     // "./src/api/Typescript/Typescript.stories.tsx": require("../src/api/Typescript/Typescript.stories.tsx"),
     // "./src/api/UtilityFunctions/UtilityFunctions.stories.tsx": require("../src/api/UtilityFunctions/UtilityFunctions.stories.tsx"),
     // "./src/api/Variants/BaseStyleVariantSizes.stories.tsx": require("../src/api/Variants/BaseStyleVariantSizes.stories.tsx"),
-    './src/plugins/AnimationPlugin/Animation.stories.tsx': require('../src/plugins/AnimationPlugin/Animation.stories.tsx'),
+    // './src/plugins/AnimationPlugin/Animation.stories.tsx': require('../src/plugins/AnimationPlugin/Animation.stories.tsx'),
     // "./src/plugins/CSSVariables/CSSVariables.stories.tsx": require("../src/plugins/CSSVariables/CSSVariables.stories.tsx"),
-    // "./src/plugins/FontsPlugin/FontsPlugin.stories.tsx": require("../src/plugins/FontsPlugin/FontsPlugin.stories.tsx"),
+    './src/plugins/FontsPlugin/FontsPlugin.stories.tsx': require('../src/plugins/FontsPlugin/FontsPlugin.stories.tsx'),
   };
 };
 
