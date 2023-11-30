@@ -2088,6 +2088,11 @@
   resolved "https://registry.yarnpkg.com/@eslint/js/-/js-8.48.0.tgz#642633964e217905436033a2bd08bf322849b7fb"
   integrity sha512-ZSjtmelB7IJfWD2Fvb7+Z+ChTIKWq6kjda95fLcQKNS5aheVHn4IkfgRQE3sIIzTcSLwLcLZUD9UBt+V7+h+Pw==
 
+"@expo-google-fonts/outfit@^0.2.3":
+  version "0.2.3"
+  resolved "https://registry.yarnpkg.com/@expo-google-fonts/outfit/-/outfit-0.2.3.tgz#63d7acd2c96f5a9763a20d64dab5ae68b54eac6a"
+  integrity sha512-uLW3n6WwtrF33IBDyuHKPgBNcJKe3O8+YXS1f7SLYdb5jEgXP2udNzzhmiw7OYvIAjfS+XDOw0uTELSB36VzOQ==
+
 "@expo/bunyan@4.0.0", "@expo/bunyan@^4.0.0":
   version "4.0.0"
   resolved "https://registry.yarnpkg.com/@expo/bunyan/-/bunyan-4.0.0.tgz#be0c1de943c7987a9fbd309ea0b1acd605890c7b"
@@ -2605,6 +2610,14 @@
     "@babel/preset-typescript" "^7.18.6"
     "@babel/traverse" "^7.20.5"
     lodash.merge "^4.6.2"
+
+"@gluestack-style/react@1.0.8":
+  version "1.0.8"
+  resolved "https://registry.yarnpkg.com/@gluestack-style/react/-/react-1.0.8.tgz#9f8b1d287e7403d7e1d5b6ffb6c51bd7254177b2"
+  integrity sha512-dmOOBnk+0UtIrYPOcLShF1QNk01VZGBXtQvgBMnDYBKJikf93tOfcAmObZxy2xSxN5BXDl9xvZgtRGbwkkfquQ==
+  dependencies:
+    inline-style-prefixer "^6.0.1"
+    normalize-css-color "^1.0.2"
 
 "@gluestack-style/react@^0.2.16", "@gluestack-style/react@^0.2.21":
   version "0.2.51"
@@ -11187,6 +11200,13 @@ expo-file-system@~15.1.0, expo-file-system@~15.1.1:
   integrity sha512-MYYDKxjLo9VOkvGHqym5EOAUS+ero9O66X5zI+EXJzqNznKvnfScdXeeAaQzShmWtmLkdVDCoYFGOaTvTA1wTQ==
   dependencies:
     uuid "^3.4.0"
+
+expo-font@^11.6.0:
+  version "11.6.0"
+  resolved "https://registry.yarnpkg.com/expo-font/-/expo-font-11.6.0.tgz#7c1c8c82e3b437d54d911808fdf03578763913f3"
+  integrity sha512-ekfU0MN7vzJNGwQCJhxnhF2M9Fq/RtVF5xSQpr8+f4ISPimmKfEcArMHKCl4oG3saFVjSRX7fLbo38WOv3z5Mw==
+  dependencies:
+    fontfaceobserver "^2.1.0"
 
 expo-font@~11.0.1:
   version "11.0.1"

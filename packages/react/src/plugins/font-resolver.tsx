@@ -3,8 +3,8 @@ import type { IStyled, IStyledPlugin } from '../types';
 import { useStyled } from '../StyledProvider';
 import { propertyTokenMap } from '../propertyTokenMap';
 import { deepMerge, setObjectKeyValue } from '../utils';
-import { getVariantProps } from '../styled';
-
+import { getVariantProps, styled } from '../styled';
+import { StyleSheet } from 'react-native';
 const fontWeights: any = {
   '100': 'Thin',
   '200': 'ExtraLight',
@@ -221,8 +221,14 @@ export class FontResolver implements IStyledPlugin, FontPlugin {
   componentMiddleWare({ Component: InputComponent, extendedConfig }: any) {
     const styledConfig = this.#fontFamily;
     this.#fontFamily = {};
-
+    const StyledInputComponent = styled(
+      InputComponent,
+      {},
+      { componentName: 'StyledTextComponent' }
+    );
+    StyledInputComponent.isStyledComponent = true;
     const OutputComponent = React.forwardRef((props: any, ref: any) => {
+      console.log('LOG component props in font-resolver', props);
       const styledContext = useStyled();
       const CONFIG = useMemo(
         () => ({
@@ -250,10 +256,9 @@ export class FontResolver implements IStyledPlugin, FontPlugin {
         styledConfig
       );
       let componentStyledObject = deepMerge(styledConfig, variantStyledObject);
-
       // delete componentStyledObject.variants;
 
-      const { sx, fontWeight, fontFamily, fontStyle, ...rest } = restProps;
+      const { sx, fontWeight, fontFamily, fontStyle, as, ...rest } = restProps;
 
       if (fontWeight || componentStyledObject.fontWeight) {
         componentStyledObject.fontWeight =
@@ -271,6 +276,11 @@ export class FontResolver implements IStyledPlugin, FontPlugin {
       }
 
       const sxPropsWithThemeProps = deepMerge(sx, componentStyledObject);
+      console.log(
+        'LOG sxPropsWithThemeProps',
+        restProps,
+        sxPropsWithThemeProps
+      );
 
       const [resolvedSxProps, , ,] = this.inputMiddleWare(
         sxPropsWithThemeProps,
@@ -278,8 +288,29 @@ export class FontResolver implements IStyledPlugin, FontPlugin {
         false,
         () => <></>
       );
-
-      return <InputComponent {...rest} sx={resolvedSxProps} ref={ref} />;
+      if (InputComponent.isStyledComponent) {
+        return (
+          <InputComponent
+            {...rest}
+            style={StyleSheet.flatten(rest.style)}
+            sx={resolvedSxProps}
+            ref={ref}
+          />
+        );
+      } else {
+        const flattenedStyle = StyleSheet.flatten(rest.style);
+        delete flattenedStyle.fontFamily;
+        return (
+          <StyledInputComponent
+            {...rest}
+            style={flattenedStyle}
+            disableMiddleware={true}
+            sx={resolvedSxProps}
+            ref={ref}
+            children={rest.children}
+          />
+        );
+      }
     });
 
     //@ts-ignore
@@ -293,7 +324,7 @@ export class FontResolver implements IStyledPlugin, FontPlugin {
     };
 
     //@ts-ignore
-    OutputComponent.isStyledComponent = InputComponent?.isStyledComponent;
+    OutputComponent.isStyledComponent = true;
     //@ts-ignore
     OutputComponent.isComposedComponent = InputComponent?.isComposedComponent;
     //@ts-ignore

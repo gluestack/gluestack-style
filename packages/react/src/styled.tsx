@@ -1973,16 +1973,17 @@ export function verboseStyled<P, Variants, ComCon>(
 
     delete resolvedStyleProps?.as;
 
-    // }
-
     const ComponentWithPlugin = React.useMemo(() => {
       if (plugins) {
         for (const pluginName in plugins) {
           // @ts-ignore
-          if (plugins[pluginName]?.componentMiddleWare) {
+          if (
+            plugins[pluginName]?.componentMiddleWare &&
+            !resolvedStyleProps.disableMiddleware
+          ) {
             // @ts-ignore
             Component = plugins[pluginName]?.componentMiddleWare({
-              Component: Component,
+              Component: AsComp ?? Component,
               theme,
               componentStyleConfig,
               ExtendedConfig,
@@ -1995,7 +1996,6 @@ export function verboseStyled<P, Variants, ComCon>(
       }
       return Component;
     }, []);
-
     let component;
 
     const propsToBePassedInToPlugin =
@@ -2007,9 +2007,13 @@ export function verboseStyled<P, Variants, ComCon>(
           }
         : {};
 
+    console.log('LOG resolvedStyleProps    :', resolvedStyleProps);
     if (AsComp) {
       //@ts-ignore
-      if (Component.isStyledComponent) {
+      if (
+        ComponentWithPlugin.isStyledComponent &&
+        !resolvedStyleProps.disableMiddleware
+      ) {
         component = (
           <ComponentWithPlugin
             {...resolvedStyleProps}
@@ -2032,7 +2036,7 @@ export function verboseStyled<P, Variants, ComCon>(
       }
     } else {
       //@ts-ignores
-      component = Component.isStyledComponent ? (
+      component = ComponentWithPlugin.isStyledComponent ? (
         <ComponentWithPlugin
           {...resolvedStyleProps}
           {...propsToBePassedInToPlugin}
