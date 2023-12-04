@@ -7,6 +7,11 @@ const traverse = require('@babel/traverse').default;
 const types = require('@babel/types');
 const { getConfig: buildAndGetConfig } = require('./buildConfig');
 
+let CONFIG;
+const isConfigExist = fs.existsSync(
+  `${process.cwd()}/.gluestack/config-${process.ppid}.js`
+);
+
 const {
   convertStyledToStyledVerbosed,
   convertSxToSxVerbosed,
@@ -38,6 +43,8 @@ const {
 const IMPORT_NAME = '@gluestack-style/react';
 let configThemePath = [];
 const BUILD_TIME_GLUESTACK_STYLESHEET = new StyleInjector();
+
+let ConfigDefault = CONFIG;
 
 const convertExpressionContainerToStaticObject = (
   properties,
@@ -551,27 +558,12 @@ function isImportFromAbsolutePath(
   return false;
 }
 
-let CONFIG;
-const isConfigExist = fs.existsSync(
-  `${process.cwd()}/.gluestack/config-${process.ppid}.js`
-);
-
-let ConfigDefault = CONFIG;
-
-if (!isConfigExist) {
-  buildAndGetConfig()
-    .then((res) => {
-      CONFIG = res;
-      ConfigDefault = res;
-    })
-    .catch((err) => {
-      // eslint-disable-next-line no-console
-      console.log(err);
-    });
-}
-
-module.exports = function (b) {
+module.exports = async function (b) {
   const { types: t } = b;
+
+  if (!isConfigExist) {
+    ConfigDefault = await buildAndGetConfig();
+  }
 
   function checkWebFileExists(filePath) {
     if (filePath.includes('node_modules')) {
@@ -608,22 +600,6 @@ module.exports = function (b) {
 
   return {
     name: 'gluestack-babel-styled-resolver', // not required
-    // async pre(state) {
-    //   let plugin;
-
-    //   state.opts.plugins?.forEach((currentPlugin) => {
-    //     if (currentPlugin.key === 'gluestack-babel-styled-resolver') {
-    //       plugin = currentPlugin;
-    //     }
-    //   });
-
-    //   const configPath = plugin?.options?.configPath;
-
-    //   if (!isConfigExist) {
-    //     const res = await buildAndGetConfig(configPath);
-    //     ConfigDefault = res;
-    //   }
-    // },
     visitor: {
       ImportDeclaration(importPath, state) {
         currentFileName = state.file.opts.filename;
@@ -642,6 +618,8 @@ module.exports = function (b) {
         } else {
           platform = 'all';
         }
+
+        // console.log('\n\nCONFIG >>>>>>', ConfigDefault, '\n\nCONFIG >>>>>>');
 
         // `${process.cwd()}/.gluestack/config-${process.ppid}.js`
 
@@ -899,41 +877,44 @@ module.exports = function (b) {
           */
             const extendedThemeComponents =
               callExpressionPath.node.arguments[0].properties;
-            extendedThemeComponents.forEach((property) => {
-              if (
-                !t.isIdentifier(property.value) &&
-                !t.isTemplateLiteral(property.value) &&
-                !t.isConditionalExpression(property.value)
-              ) {
-                const { themeNode, componentConfigNode } =
-                  findThemeAndComponentConfig(property.value.properties);
 
-                let theme = themeNode
-                  ? getObjectFromAstNode(themeNode?.value)
-                  : {};
-                let componentConfig = componentConfigNode
-                  ? getObjectFromAstNode(componentConfigNode?.value)
-                  : {};
+            if (Array.isArray(extendedThemeComponents)) {
+              extendedThemeComponents.forEach((property) => {
+                if (
+                  !t.isIdentifier(property.value) &&
+                  !t.isTemplateLiteral(property.value) &&
+                  !t.isConditionalExpression(property.value)
+                ) {
+                  const { themeNode, componentConfigNode } =
+                    findThemeAndComponentConfig(property.value.properties);
 
-                const resultParamsNode = getBuildTimeParams(
-                  theme,
-                  componentConfig,
-                  {},
-                  outputLibrary,
-                  platform,
-                  'extended'
-                );
+                  let theme = themeNode
+                    ? getObjectFromAstNode(themeNode?.value)
+                    : {};
+                  let componentConfig = componentConfigNode
+                    ? getObjectFromAstNode(componentConfigNode?.value)
+                    : {};
 
-                if (resultParamsNode) {
-                  property.value.properties.push(
-                    t.objectProperty(
-                      t.stringLiteral('BUILD_TIME_PARAMS'),
-                      resultParamsNode
-                    )
+                  const resultParamsNode = getBuildTimeParams(
+                    theme,
+                    componentConfig,
+                    {},
+                    outputLibrary,
+                    platform,
+                    'extended'
                   );
+
+                  if (resultParamsNode) {
+                    property.value.properties.push(
+                      t.objectProperty(
+                        t.stringLiteral('BUILD_TIME_PARAMS'),
+                        resultParamsNode
+                      )
+                    );
+                  }
                 }
-              }
-            });
+              });
+            }
           }
         }
       },
@@ -970,16 +951,18 @@ module.exports = function (b) {
 
           const prefixedMediaQueries = {};
 
-          Object.keys(componentExtendedConfig?.tokens?.mediaQueries).forEach(
-            (key) => {
-              prefixedMediaQueries[key] = {
-                key: `@${key}`,
-                isMediaQuery: true,
-              };
-            }
-          );
+          if (componentExtendedConfig?.tokens?.mediaQueries) {
+            Object.keys(componentExtendedConfig?.tokens?.mediaQueries).forEach(
+              (key) => {
+                prefixedMediaQueries[key] = {
+                  key: `@${key}`,
+                  isMediaQuery: true,
+                };
+              }
+            );
 
-          Object.assign(reservedKeys, { ...prefixedMediaQueries });
+            Object.assign(reservedKeys, { ...prefixedMediaQueries });
+          }
 
           const attr = jsxOpeningElementPath.node.attributes;
           attr.forEach((attribute, index) => {
