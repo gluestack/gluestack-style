@@ -65,7 +65,10 @@ export const checkAndReturnUtilityProp = (
           propPath: [reservedKeys[reservedKey].key],
           value: propValue,
         };
-      } else if (descendants.includes(reservedKey)) {
+      } else if (
+        Array.isArray(descendants) &&
+        descendants.includes(reservedKey)
+      ) {
         return {
           propPath: [reservedKey],
           value: propValue,
